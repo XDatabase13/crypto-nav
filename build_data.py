@@ -505,15 +505,15 @@ def build_data():
     # -----------------------------------------------------------------------
     # 出力
     # -----------------------------------------------------------------------
-    ref_time = generated_at.replace(hour=8, minute=0, second=0, microsecond=0)
+    ref_time = generated_at.replace(hour=7, minute=0, second=0, microsecond=0)
     output = {
         "_meta": {
             "schema_version": "1.0",
-            "description": "暗号通貨トレジャリー企業 mNAV 算出結果。バッチが毎朝(JST 8時着地)生成。",
+            "description": "暗号通貨トレジャリー企業 mNAV 算出結果。バッチが毎朝(JST 7時着地)生成。",
             "generated_at":        to_iso_jst(generated_at),
             "reference_time_jst":  to_iso_jst(ref_time),
             "reference_time_note": (
-                "毎朝JST8時着地。BTC価格・為替・MSTR株価は当日の米国市場終値ベース、"
+                "毎朝JST7時着地。BTC価格・為替・MSTR株価は当日の米国市場終値ベース、"
                 "メタプラ株価は前日の東京終値ベース（時点ズレを明示）。"
             ),
             "overall_status": overall_status,

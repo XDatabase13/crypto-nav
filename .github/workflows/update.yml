@@ -1,14 +1,14 @@
 name: Update mNAV Data
 
-# JST朝の5本cron（sbg-nav の構成を踏襲）
+# sbg-nav と同一のcronスケジュール（JST 05:30〜07:30 の5本）
 # GitHub Actions の cron は UTC。JST = UTC+9。
 on:
   schedule:
+    - cron: '30 20 * * *'  # JST 05:30
+    - cron: '0 21 * * *'   # JST 06:00
+    - cron: '30 21 * * *'  # JST 06:30
     - cron: '0 22 * * *'   # JST 07:00
     - cron: '30 22 * * *'  # JST 07:30
-    - cron: '0 23 * * *'   # JST 08:00
-    - cron: '30 23 * * *'  # JST 08:30
-    - cron: '0 0 * * *'    # JST 09:00
   workflow_dispatch:         # 手動実行も可能
 
 jobs:
