@@ -1,0 +1,191 @@
+{
+  "_meta": {
+    "schema_version": "1.0",
+    "description": "暗号通貨トレジャリー企業 mNAV算出用 設定ファイル。レイヤー2(イベント駆動・手動)とレイヤー3(四半期固定・手動)の変数を管理する。レイヤー1(BTC価格/為替/株価)はこのファイルに含めず、バッチが実行時にAPI取得する。",
+    "last_edited_at": "2026-06-15T12:00:00+09:00",
+    "last_edited_note": "実データ投入(Geminiリサーチ結果)。MSTRに優先株式(preferred_equity)を追加=シニア・クレームとして控除。計算式: nav_total = btc_value + cash - debt - preferred_equity。"
+  },
+
+  "global": {
+    "_comment": "全銘柄共通のレイヤー1取得対象。値そのものは持たず、取得すべき対象の定義のみ。実値はバッチがdata.jsonへ書き出す。",
+    "btc_price_sources": {
+      "primary": "yfinance",
+      "ticker": "BTC-USD"
+    },
+    "fx_source": {
+      "pair": "USDJPY",
+      "ticker": "USDJPY=X"
+    }
+  },
+
+  "companies": [
+    {
+      "id": "mstr",
+      "display_name": "Strategy (MicroStrategy)",
+      "ticker": "MSTR",
+      "exchange": "NASDAQ",
+      "base_currency": "USD",
+      "ir_url": "https://www.strategy.com/",
+
+      "layer2": {
+        "_comment": "イベント駆動。適時開示が出た当日に手動更新する。各変数は値＋根拠開示の出所＋日付を必ずセットで持つ。",
+
+        "btc_holdings": {
+          "value": 845256,
+          "unit": "BTC",
+          "as_of": "2026-06-07",
+          "source_type": "disclosure",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1050446/000119312526260709/mstr-20260504.htm",
+          "source_label": "Form 8-K (June 8, 2026)",
+          "note": "保有BTC総量(枚)。買い増し開示のたびに更新。"
+        },
+
+        "shares_outstanding": {
+          "value": 345926000,
+          "unit": "shares",
+          "as_of": "2026-03-31",
+          "source_type": "disclosure",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1050446/000105044626000031/mstr-20260331.htm",
+          "source_label": "Form 10-Q (Q1 2026)",
+          "note": "基本発行済株式数(希薄化前)。クラスA 326,286,000株 + クラスB 19,640,000株 の合算。ATMで日々増加するため8-Kのたびに加算修正が望ましい(現在値は3/31時点)。"
+        },
+
+        "interest_bearing_debt": {
+          "value": 6713659000,
+          "unit": "USD",
+          "as_of": "2026-05-25",
+          "source_type": "disclosure",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1050446/000119312526237907/mstr-ex99_1.htm",
+          "source_label": "Press Release (May 26, 2026)",
+          "note": "有利子負債総額(額面)=転換社債6本の合計。公表値$6.7Bと一致。2029satの元本$3Bのうち$1.5Bを2026/5に買入消却済(残$1.5B反映)。",
+          "breakdown": [
+            { "label": "2028 Convertible Notes", "amount": 1010000000, "maturity": "2028", "type": "convertible_note", "note": "クーポン0.625%。2024年9月発行。" },
+            { "label": "2029 Convertible Notes", "amount": 1500000000, "maturity": "2029", "type": "convertible_note", "note": "クーポン0.00%。元本$3Bのうち半分を2026年5月に買入消却。" },
+            { "label": "2030A Convertible Notes", "amount": 800000000, "maturity": "2030", "type": "convertible_note", "note": "クーポン0.625%。2024年3月発行。" },
+            { "label": "2030B Convertible Notes", "amount": 2000000000, "maturity": "2030", "type": "convertible_note", "note": "クーポン0.00%。2025年2月発行。" },
+            { "label": "2031 Convertible Notes", "amount": 603659000, "maturity": "2031", "type": "convertible_note", "note": "クーポン0.875%。" },
+            { "label": "2032 Convertible Notes", "amount": 800000000, "maturity": "2032", "type": "convertible_note", "note": "クーポン2.25%。" }
+          ]
+        },
+
+        "preferred_equity": {
+          "value": 15500000000,
+          "unit": "USD",
+          "as_of": "2026-05-25",
+          "source_type": "disclosure",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1050446/000119312526237907/mstr-ex99_1.htm",
+          "source_label": "Press Release (May 26, 2026)",
+          "note": "優先株式の想定元本残高(Aggregate Notional Amount)。普通株主に優先するシニア・クレームとしてmNAV算出時に分子から控除する(清算優先額=想定元本の近似)。市場ベンチマーク(EV基準)と整合させるため必須。",
+          "breakdown": [
+            { "label": "STRC/STRK/STRF/STRD 合計", "amount": 15500000000, "type": "preferred_stock", "note": "STRCは年率11.5%配当等。種別ごとの内訳は開示更新時に分解可。" }
+          ]
+        }
+      },
+
+      "layer3": {
+        "_comment": "四半期固定。決算発表時にのみ更新する。",
+        "cash_and_equivalents": {
+          "value": 2209245000,
+          "unit": "USD",
+          "as_of": "2026-03-31",
+          "source_type": "earnings",
+          "fiscal_period": "Q1 2026",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1050446/000105044626000031/mstr-20260331.htm",
+          "source_label": "Form 10-Q (Q1 2026)",
+          "note": "手元現金等(現金+現金同等物+拘束性預金)。四半期固定。USD Reserveでなく決算期末確定値を採用。"
+        }
+      },
+
+      "reference_only": {
+        "_comment": "計算には使わない。UI参考表示用。",
+        "btc_avg_cost": {
+          "value": 75680,
+          "unit": "USD",
+          "as_of": "2026-06-07",
+          "note": "平均取得単価(参考)。計算には使用しない(計算は常に現在枚数×現在価格)。"
+        }
+      }
+    },
+
+    {
+      "id": "metaplanet",
+      "display_name": "メタプラネット",
+      "ticker": "3350",
+      "exchange": "TSE",
+      "base_currency": "JPY",
+      "ir_url": "https://metaplanet.jp/jp/ir",
+
+      "layer2": {
+        "_comment": "イベント駆動。適時開示(TDnet)が出た当日に手動更新。",
+
+        "btc_holdings": {
+          "value": 40177,
+          "unit": "BTC",
+          "as_of": "2026-03-31",
+          "source_type": "disclosure",
+          "source_url": "https://finance-frontend-pc-dist.west.edge.storage-yahoo.jp/disclosure/20260513/20260513530380.pdf",
+          "source_label": "2026年12月期 第1四半期決算説明資料",
+          "note": "保有BTC総量(枚)。Q1に5,075 BTC追加取得し累計40,177。買い増し開示のたびに更新。"
+        },
+
+        "shares_outstanding": {
+          "value": 1281256904,
+          "unit": "shares",
+          "as_of": "2026-05-31",
+          "source_type": "disclosure",
+          "source_url": "https://finance-frontend-pc-dist.west.edge.storage-yahoo.jp/disclosure/20260601/20260601557325.pdf",
+          "source_label": "第27回新株予約権の月間行使状況に関するお知らせ",
+          "note": "★希薄化タイムラグ注意。発行済1,281,283,624株から自己株26,720株を控除した実質値。新株予約権(MSCB)が日々行使され株式数は膨張するが、開示は月初の前月末分のみ。月末に近づくほどmNAVが過大評価されるバイアスあり(UIで注記必須)。"
+        },
+
+        "interest_bearing_debt": {
+          "value": 141074000000,
+          "unit": "JPY",
+          "as_of": "2026-04-24",
+          "source_type": "disclosure",
+          "source_url": "https://finance.yahoo.co.jp/news/detail/79318e9f55b60a859a823bac4f0d688017f4961f",
+          "source_label": "Q1決算短信 + 第20回普通社債発行に関するお知らせ",
+          "note": "★確度中(推測混在・要再確認)。Q1末の信用ファシリティ(BTC担保融資)約610.74億円 + 第20回普通社債80億円 の合算推測値。基準日が混在(融資=3月末/社債=4/24)。負債は流動的(Siiibo買収借入枠等)。",
+          "breakdown": [
+            { "label": "信用ファシリティ(BTC担保融資)", "amount": 61074000000, "maturity": null, "type": "credit_facility", "note": "約3.02億USD建て借入。Q1(3月末)時点。USD建てのため為替で円換算額が変動。" },
+            { "label": "第20回普通社債", "amount": 80000000000, "maturity": "2027-04-23", "type": "bond", "note": "無利息。EVO FUND引受。2026/4/24発行、全額BTC購入充当。" }
+          ]
+        },
+
+        "preferred_equity": {
+          "value": 0,
+          "unit": "JPY",
+          "as_of": "2026-06-15",
+          "source_type": "disclosure",
+          "source_url": null,
+          "source_label": "該当なし",
+          "note": "メタプラネットは優先株式を発行していないため0。MSTRと同一の数式(シニア・クレーム控除)で処理するための項目。",
+          "breakdown": []
+        }
+      },
+
+      "layer3": {
+        "_comment": "四半期固定。決算発表時にのみ更新。",
+        "cash_and_equivalents": {
+          "value": 23821000000,
+          "unit": "JPY",
+          "as_of": "2026-03-31",
+          "source_type": "earnings",
+          "fiscal_period": "Q1 2026",
+          "source_url": "https://finance.yahoo.co.jp/quote/3350.T/financials",
+          "source_label": "2026年12月期 第1四半期決算短信(要約データ)",
+          "note": "★確度中(二次情報ベース)。現金及び預金238.21億円。Siiibo証券買収(21億円・7月完了予定)で今後変動見込み。"
+        }
+      },
+
+      "reference_only": {
+        "btc_avg_cost": {
+          "value": 12540793,
+          "unit": "JPY",
+          "as_of": "2026-04-02",
+          "note": "★確度中(報道推測)。平均取得単価(参考・JPY建て)。計算には使用しない。"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,136 @@
+<svg width="100%" viewBox="0 0 680 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="mnavTitle mnavDesc">
+  <title id="mnavTitle">mNAVプレミアムの計算フロー</title>
+  <desc id="mnavDesc">保有BTC・手元現金・シニアクレーム・発行済株式数から理論NAVと時価総額を経てmNAVプレミアムを算出する流れの図解</desc>
+
+  <defs>
+    <marker id="mnavArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <style>
+    .mnav-t  { font-family: var(--font-sans, system-ui, sans-serif); font-size: 14px; font-weight: 500; }
+    .mnav-ts { font-family: var(--font-sans, system-ui, sans-serif); font-size: 12px; font-weight: 400; }
+    .mnav-h  { font-family: var(--font-sans, system-ui, sans-serif); font-size: 14px; font-weight: 500; }
+    .mnav-op { font-family: var(--font-sans, system-ui, sans-serif); font-size: 18px; font-weight: 400; }
+
+    .mnav-add    { fill: #143d33; stroke: #1D9E75; }
+    .mnav-add-t  { fill: #9FE1CB; }
+    .mnav-sub    { fill: #3a1414; stroke: #E24B4A; }
+    .mnav-sub-t  { fill: #F09595; }
+    .mnav-nav    { fill: #241f4d; stroke: #7F77DD; }
+    .mnav-nav-t  { fill: #CECBF6; }
+    .mnav-neu    { fill: #2c2c2a; stroke: #888780; }
+    .mnav-neu-t  { fill: #D3D1C7; }
+    .mnav-mkt    { fill: #0c2a4a; stroke: #378ADD; }
+    .mnav-mkt-t  { fill: #B5D4F4; }
+    .mnav-res    { fill: #4a2f04; stroke: #EF9F27; }
+    .mnav-res-t  { fill: #FAC775; }
+    .mnav-label  { fill: #B4B2A9; }
+    .mnav-line   { stroke: #888780; stroke-width: 1.5; fill: none; }
+
+    @media (prefers-color-scheme: light) {
+      .mnav-add   { fill: #E1F5EE; stroke: #0F6E56; }
+      .mnav-add-t { fill: #085041; }
+      .mnav-sub   { fill: #FCEBEB; stroke: #A32D2D; }
+      .mnav-sub-t { fill: #791F1F; }
+      .mnav-nav   { fill: #EEEDFE; stroke: #534AB7; }
+      .mnav-nav-t { fill: #3C3489; }
+      .mnav-neu   { fill: #F1EFE8; stroke: #5F5E5A; }
+      .mnav-neu-t { fill: #444441; }
+      .mnav-mkt   { fill: #E6F1FB; stroke: #185FA5; }
+      .mnav-mkt-t { fill: #0C447C; }
+      .mnav-res   { fill: #FAEEDA; stroke: #854F0B; }
+      .mnav-res-t { fill: #633806; }
+      .mnav-label { fill: #5F5E5A; }
+      .mnav-line  { stroke: #5F5E5A; }
+    }
+  </style>
+
+  <text class="mnav-h mnav-label" x="40" y="28">① 価値を足す</text>
+
+  <g>
+    <rect class="mnav-add" x="40" y="42" width="200" height="56" rx="8" stroke-width="0.5"/>
+    <text class="mnav-h mnav-add-t" x="140" y="64" text-anchor="middle" dominant-baseline="central">BTC時価評価額</text>
+    <text class="mnav-ts mnav-add-t" x="140" y="84" text-anchor="middle" dominant-baseline="central">保有BTC × BTC価格</text>
+  </g>
+
+  <text class="mnav-op mnav-label" x="258" y="72" text-anchor="middle" dominant-baseline="central">＋</text>
+
+  <g>
+    <rect class="mnav-add" x="276" y="42" width="200" height="56" rx="8" stroke-width="0.5"/>
+    <text class="mnav-h mnav-add-t" x="376" y="64" text-anchor="middle" dominant-baseline="central">手元現金等</text>
+    <text class="mnav-ts mnav-add-t" x="376" y="84" text-anchor="middle" dominant-baseline="central">直近決算の値</text>
+  </g>
+
+  <text class="mnav-h mnav-label" x="40" y="142">② シニア・クレーム（先に支払われる分）を引く</text>
+
+  <g>
+    <rect class="mnav-sub" x="40" y="156" width="190" height="56" rx="8" stroke-width="0.5"/>
+    <text class="mnav-h mnav-sub-t" x="135" y="178" text-anchor="middle" dominant-baseline="central">有利子負債</text>
+    <text class="mnav-ts mnav-sub-t" x="135" y="198" text-anchor="middle" dominant-baseline="central">転換社債・社債など</text>
+  </g>
+
+  <text class="mnav-op mnav-label" x="248" y="184" text-anchor="middle" dominant-baseline="central">＋</text>
+
+  <g>
+    <rect class="mnav-sub" x="266" y="156" width="190" height="56" rx="8" stroke-width="0.5"/>
+    <text class="mnav-h mnav-sub-t" x="361" y="178" text-anchor="middle" dominant-baseline="central">優先株式</text>
+    <text class="mnav-ts mnav-sub-t" x="361" y="198" text-anchor="middle" dominant-baseline="central">普通株主より優先</text>
+  </g>
+
+  <text class="mnav-op mnav-label" x="474" y="184" text-anchor="middle" dominant-baseline="central">＝</text>
+
+  <g>
+    <rect class="mnav-sub" x="492" y="156" width="148" height="56" rx="8" stroke-width="1"/>
+    <text class="mnav-h mnav-sub-t" x="566" y="178" text-anchor="middle" dominant-baseline="central">シニア・クレーム計</text>
+    <text class="mnav-ts mnav-sub-t" x="566" y="198" text-anchor="middle" dominant-baseline="central">引く対象の合計</text>
+  </g>
+
+  <line class="mnav-line" x1="140" y1="98" x2="140" y2="266" marker-end="url(#mnavArrow)"/>
+  <line class="mnav-line" x1="376" y1="98" x2="376" y2="266" marker-end="url(#mnavArrow)"/>
+  <line class="mnav-line" x1="566" y1="212" x2="566" y2="240"/>
+  <line class="mnav-line" x1="566" y1="240" x2="360" y2="240"/>
+  <line class="mnav-line" x1="360" y1="240" x2="360" y2="266" marker-end="url(#mnavArrow)"/>
+
+  <g>
+    <rect class="mnav-nav" x="190" y="276" width="300" height="58" rx="8" stroke-width="1"/>
+    <text class="mnav-h mnav-nav-t" x="340" y="298" text-anchor="middle" dominant-baseline="central">理論NAV総額</text>
+    <text class="mnav-ts mnav-nav-t" x="340" y="318" text-anchor="middle" dominant-baseline="central">BTC ＋ 現金 − シニア・クレーム</text>
+  </g>
+
+  <text class="mnav-h mnav-label" x="40" y="378">③ 株式数で割り、実際の株価と比べる</text>
+
+  <line class="mnav-line" x1="340" y1="334" x2="340" y2="396" marker-end="url(#mnavArrow)"/>
+
+  <g>
+    <rect class="mnav-neu" x="40" y="396" width="190" height="56" rx="8" stroke-width="0.5"/>
+    <text class="mnav-h mnav-neu-t" x="135" y="418" text-anchor="middle" dominant-baseline="central">発行済株式数</text>
+    <text class="mnav-ts mnav-neu-t" x="135" y="438" text-anchor="middle" dominant-baseline="central">割り算の分母</text>
+  </g>
+
+  <g>
+    <rect class="mnav-nav" x="250" y="396" width="190" height="56" rx="8" stroke-width="0.5"/>
+    <text class="mnav-h mnav-nav-t" x="345" y="418" text-anchor="middle" dominant-baseline="central">1株あたり理論NAV</text>
+    <text class="mnav-ts mnav-nav-t" x="345" y="438" text-anchor="middle" dominant-baseline="central">BTCの裏付け価値</text>
+  </g>
+
+  <g>
+    <rect class="mnav-mkt" x="460" y="396" width="180" height="56" rx="8" stroke-width="0.5"/>
+    <text class="mnav-h mnav-mkt-t" x="550" y="418" text-anchor="middle" dominant-baseline="central">実際の株価</text>
+    <text class="mnav-ts mnav-mkt-t" x="550" y="438" text-anchor="middle" dominant-baseline="central">市場での評価</text>
+  </g>
+
+  <line class="mnav-line" x1="230" y1="424" x2="246" y2="424" marker-end="url(#mnavArrow)"/>
+
+  <line class="mnav-line" x1="345" y1="452" x2="345" y2="512" marker-end="url(#mnavArrow)"/>
+  <line class="mnav-line" x1="550" y1="452" x2="550" y2="486"/>
+  <line class="mnav-line" x1="550" y1="486" x2="360" y2="486"/>
+  <line class="mnav-line" x1="360" y1="486" x2="360" y2="512" marker-end="url(#mnavArrow)"/>
+
+  <g>
+    <rect class="mnav-res" x="170" y="522" width="340" height="62" rx="8" stroke-width="1"/>
+    <text class="mnav-h mnav-res-t" x="340" y="544" text-anchor="middle" dominant-baseline="central">mNAVプレミアム ＝ 株価 ÷ 1株NAV</text>
+    <text class="mnav-ts mnav-res-t" x="340" y="566" text-anchor="middle" dominant-baseline="central">1超＝プレミアム（割高） / 1未満＝ディスカウント（割安）</text>
+  </g>
+</svg>

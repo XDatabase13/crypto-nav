@@ -1,0 +1,49 @@
+name: Update mNAV Data
+
+# JST朝の5本cron（sbg-nav の構成を踏襲）
+# GitHub Actions の cron は UTC。JST = UTC+9。
+on:
+  schedule:
+    - cron: '0 22 * * *'   # JST 07:00
+    - cron: '30 22 * * *'  # JST 07:30
+    - cron: '0 23 * * *'   # JST 08:00
+    - cron: '30 23 * * *'  # JST 08:30
+    - cron: '0 0 * * *'    # JST 09:00
+  workflow_dispatch:         # 手動実行も可能
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run build_data.py
+        run: python build_data.py
+
+      - name: Commit and push if data.json changed
+        # skip-commit ロジック: data.json に実質的な差分がなければコミットしない
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data.json
+          if git diff --staged --quiet; then
+            echo "data.json に変更なし。コミットをスキップします。"
+          else
+            TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+            git commit -m "auto: update mNAV data ${TIMESTAMP}"
+            git push
+            echo "data.json をコミット・プッシュしました。"
+          fi

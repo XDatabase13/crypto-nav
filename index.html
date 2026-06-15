@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>暗号通貨トレジャリー企業 mNAVモニター | xdbdb.com</title>
+  <link rel="canonical" href="https://xdbdb.com/crypto-nav/">
+  <style>
+    :root {
+      --bg:        #0d1117;
+      --card:      #161b22;
+      --card2:     #1c2128;
+      --border:    #30363d;
+      --border2:   #21262d;
+      --text:      #e6edf3;
+      --text2:     #8b949e;
+      --text3:     #6e7681;
+      --accent:    #f0c040;
+      --green:     #3fb950;
+      --red:       #f85149;
+      --orange:    #d29922;
+      --blue:      #58a6ff;
+      --purple:    #bc8cff;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'SF Mono', 'Consolas', 'Menlo', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ---- layout ---- */
+    .wrap { max-width: 960px; margin: 0 auto; padding: 0 16px 48px; }
+
+    /* ---- breadcrumb ---- */
+    .breadcrumb {
+      padding: 10px 0;
+      color: var(--text3);
+      font-size: 12px;
+      border-bottom: 1px solid var(--border2);
+      margin-bottom: 24px;
+    }
+    .breadcrumb a { color: var(--text2); }
+    .breadcrumb .sep { margin: 0 6px; }
+
+    /* ---- header ---- */
+    .site-header { margin-bottom: 8px; }
+    .site-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .site-subtitle { color: var(--text2); font-size: 12px; margin-top: 2px; }
+    .meta-row {
+      display: flex; flex-wrap: wrap; gap: 16px;
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--text2);
+      border-top: 1px solid var(--border2);
+      padding-top: 8px;
+    }
+    .meta-item span { color: var(--text); }
+
+    /* ---- assumptions ---- */
+    .assumptions {
+      margin: 14px 0 24px;
+      padding: 8px 12px;
+      background: var(--card2);
+      border-left: 3px solid var(--border);
+      border-radius: 0 4px 4px 0;
+      font-size: 11px;
+      color: var(--text2);
+    }
+    .assumptions strong { color: var(--text); }
+
+    /* ---- status banners ---- */
+    .banner {
+      padding: 10px 14px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 12px;
+    }
+    .banner.failed  { background: #3d1a1a; border: 1px solid var(--red);    color: #ffb3b0; }
+    .banner.partial { background: #2d2200; border: 1px solid var(--orange); color: #ffe08a; }
+    .banner-title { font-weight: 700; margin-bottom: 4px; }
+    .banner ul { margin: 0; padding-left: 16px; }
+    .banner li { margin-top: 2px; }
+
+    /* ---- section headers ---- */
+    h2 {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text2);
+      margin: 28px 0 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ---- comparison block ---- */
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 12px;
+      align-items: stretch;
+      margin-bottom: 8px;
+    }
+    .cmp-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      text-align: center;
+    }
+    .cmp-card .ticker { font-size: 11px; color: var(--text2); margin-bottom: 4px; }
+    .cmp-card .name   { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .cmp-card .mnav-val {
+      font-size: 36px;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .cmp-card .pct-val { font-size: 14px; }
+    .cmp-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-width: 100px;
+    }
+    .spread-label { font-size: 10px; color: var(--text3); text-transform: uppercase; }
+    .spread-val   { font-size: 22px; font-weight: 800; color: var(--accent); }
+    .spread-desc  {
+      font-size: 11px; color: var(--text2); text-align: center; margin-top: 6px;
+    }
+    .no-data { color: var(--text3); font-size: 24px; }
+    .failed-label {
+      font-size: 13px; color: var(--red);
+      padding: 8px;
+      border: 1px solid var(--red);
+      border-radius: 4px;
+      background: #1a0808;
+    }
+
+    /* colors */
+    .premium  { color: var(--green); }
+    .discount { color: var(--red); }
+    .neutral  { color: var(--text); }
+
+    /* ---- company cards ---- */
+    .company-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+    .co-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .co-card.status-error  { border-color: var(--red); }
+    .co-card.status-partial{ border-color: var(--orange); }
+    .co-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .co-name   { font-weight: 700; font-size: 14px; }
+    .co-ticker { font-size: 11px; color: var(--text2); margin-top: 1px; }
+    .badge {
+      font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 3px;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .badge-ok      { background: #1a3a1f; color: var(--green); }
+    .badge-partial { background: #2d2200; color: var(--orange); }
+    .badge-error   { background: #3d1a1a; color: var(--red); }
+    .badge-stale   { background: #2a2a00; color: #cccc00; }
+
+    .co-rows { display: grid; gap: 6px; }
+    .co-row  { display: flex; justify-content: space-between; align-items: baseline; padding: 4px 0; border-bottom: 1px solid var(--border2); }
+    .co-row:last-child { border-bottom: none; }
+    .co-row .label { color: var(--text2); font-size: 11px; }
+    .co-row .val   { font-weight: 600; font-size: 13px; }
+    .co-row .sub   { font-size: 10px; color: var(--text3); }
+
+    /* ---- market data table ---- */
+    .md-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .md-table th {
+      text-align: left;
+      color: var(--text3);
+      font-weight: 600;
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+    .md-table td {
+      padding: 7px 8px;
+      border-bottom: 1px solid var(--border2);
+      vertical-align: middle;
+    }
+    .md-table tr:last-child td { border-bottom: none; }
+    .md-table tr:hover td { background: var(--card2); }
+    .status-ok     { color: var(--green); }
+    .status-stale  { color: var(--orange); }
+    .status-failed { color: var(--red); }
+
+    /* ---- expandable sections ---- */
+    details {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+    summary {
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 12px;
+      color: var(--text);
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      user-select: none;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::before {
+      content: '▶';
+      font-size: 9px;
+      color: var(--text3);
+      transition: transform 0.15s;
+    }
+    details[open] summary::before { transform: rotate(90deg); }
+    .details-body { padding: 4px 14px 14px; }
+
+    /* ---- inputs / calc tables ---- */
+    .inputs-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+    .inputs-table th {
+      text-align: left;
+      color: var(--text3);
+      padding: 4px 8px;
+      font-size: 10px;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    .inputs-table td {
+      padding: 5px 8px;
+      border-bottom: 1px solid var(--border2);
+      vertical-align: top;
+    }
+    .inputs-table tr:last-child td { border-bottom: none; }
+    .layer-badge {
+      display: inline-block;
+      font-size: 9px;
+      padding: 1px 4px;
+      border-radius: 2px;
+      font-weight: 700;
+    }
+    .layer-1 { background: #1a2d3d; color: var(--blue); }
+    .layer-2 { background: #2d1f3d; color: var(--purple); }
+    .layer-3 { background: #1a2d1a; color: var(--green); }
+
+    .formula-code {
+      font-family: inherit;
+      font-size: 11px;
+      color: var(--accent);
+      background: var(--bg);
+      padding: 1px 4px;
+      border-radius: 2px;
+    }
+
+    /* ---- footer ---- */
+    footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text3);
+      line-height: 1.8;
+    }
+
+    /* ---- loading / error ---- */
+    #loading, #fetch-error {
+      padding: 40px 0;
+      text-align: center;
+      color: var(--text2);
+    }
+    #fetch-error { color: var(--red); }
+
+    /* ---- formula block ---- */
+    .formula-block {
+      margin: 20px 0 24px;
+      padding: 16px 20px;
+      background: var(--card);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+    }
+    .formula-title {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text3);
+      margin-bottom: 10px;
+    }
+    .formula-line {
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 600;
+      line-height: 2.2;
+    }
+    .formula-line + .formula-line {
+      border-top: 1px solid var(--border2);
+      padding-top: 4px;
+    }
+    .btn-diagram {
+      margin-top: 12px;
+      padding: 5px 14px;
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+    }
+    .btn-diagram:hover { background: rgba(240,192,64,0.08); }
+
+    /* ---- diagram modal ---- */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 28px 24px 20px;
+      max-width: 680px;
+      width: 92%;
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: var(--text2);
+      font-size: 22px;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .modal-close:hover { color: var(--text); }
+    .modal-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    /* ---- layer legend ---- */
+    .layer-legend {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      align-items: center;
+      font-size: 10px;
+      color: var(--text3);
+      margin: 8px 0 10px;
+    }
+    .layer-legend .leg-item { display: flex; align-items: center; gap: 4px; }
+
+    /* ---- responsive ---- */
+    @media (max-width: 640px) {
+      .comparison-grid { grid-template-columns: 1fr; }
+      .cmp-center { flex-direction: row; justify-content: space-around; }
+      .company-cards { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- breadcrumb -->
+  <nav class="breadcrumb">
+    <a href="https://xdbdb.com">xdbdb.com</a>
+    <span class="sep">/</span>
+    <span>暗号通貨トレジャリー企業 mNAVモニター</span>
+  </nav>
+
+  <div id="loading">データを読み込み中…</div>
+  <div id="fetch-error" style="display:none"></div>
+  <div id="content" style="display:none"></div>
+
+</div>
+
+<!-- mNAV計算フロー図 モーダル -->
+<div class="modal-overlay" id="diagram-modal" onclick="if(event.target===this)closeDiagram()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeDiagram()" title="閉じる">×</button>
+    <div class="modal-title">mNAV 計算フロー図</div>
+    <img src="mnav_flow_diagram.svg" alt="mNAV計算フロー図" style="width:100%;height:auto;display:block;border-radius:6px;">
+  </div>
+</div>
+
+<script>
+// ===========================================================================
+// ユーティリティ
+// ===========================================================================
+function esc(s) {
+  if (s == null) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function fmtDate(iso) {
+  if (!iso) return '—';
+  try {
+    const d = new Date(iso);
+    return d.toLocaleString('ja-JP', {
+      timeZone: 'Asia/Tokyo',
+      year:'numeric', month:'2-digit', day:'2-digit',
+      hour:'2-digit', minute:'2-digit'
+    }) + ' JST';
+  } catch { return iso; }
+}
+
+function fmtNum(val, decimals = 0, prefix = '', suffix = '') {
+  if (val == null) return '<span class="no-data">—</span>';
+  const n = Number(val);
+  if (!isFinite(n)) return '<span class="no-data">—</span>';
+  const s = n.toLocaleString('ja-JP', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  });
+  return esc(prefix + s + suffix);
+}
+
+function fmtMnav(val) {
+  if (val == null) return null;
+  return Number(val).toFixed(2) + 'x';
+}
+
+function fmtPct(val) {
+  if (val == null) return '<span class="no-data">—</span>';
+  const n = Number(val);
+  const cls = n >= 0 ? 'premium' : 'discount';
+  const sign = n >= 0 ? '+' : '';
+  return `<span class="${cls}">${sign}${n.toFixed(2)}%</span>`;
+}
+
+function fmtChange(val) {
+  if (val == null) return '<span class="no-data">—</span>';
+  const n = Number(val);
+  const cls = n >= 0 ? 'premium' : 'discount';
+  const sign = n >= 0 ? '+' : '';
+  return `<span class="${cls}">${sign}${n.toFixed(2)}%</span>`;
+}
+
+function statusBadge(s) {
+  const map = {
+    ok:      ['badge-ok',      'OK'],
+    stale:   ['badge-stale',   'STALE'],
+    failed:  ['badge-error',   'FAILED'],
+    complete:['badge-ok',      'COMPLETE'],
+    partial: ['badge-partial', 'PARTIAL'],
+    error:   ['badge-error',   'ERROR'],
+  };
+  const [cls, label] = map[s] || ['', s || '?'];
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+
+function layerBadge(n) {
+  return `<span class="layer-badge layer-${n}">L${n}</span>`;
+}
+
+function nullLabel(companyStatus, btcFailed) {
+  if (btcFailed || companyStatus === 'error') {
+    return '<span class="status-failed">算出不可（BTC価格取得失敗）</span>';
+  }
+  return '<span class="no-data">データ未投入</span>';
+}
+
+// ===========================================================================
+// セクション描画
+// ===========================================================================
+
+function renderHeader(meta) {
+  const overall = meta.overall_status;
+  return `
+    <div class="site-header">
+      <div class="site-title">暗号通貨トレジャリー企業 mNAVモニター</div>
+      <div class="site-subtitle">BTC保有企業の mNAV（修正純資産価値）プレミアムを毎朝自動計算 — xdbdb.com</div>
+      <div class="meta-row">
+        <div class="meta-item">基準時刻：<span>${fmtDate(meta.reference_time_jst)}</span></div>
+        <div class="meta-item">生成：<span>${fmtDate(meta.generated_at)}</span></div>
+        <div class="meta-item">ステータス：${statusBadge(overall)}</div>
+      </div>
+    </div>
+    <div class="assumptions">
+      <strong>計算前提（すべてUIに明示）：</strong>
+      本業価値ゼロ評価（ソフトウェア事業等は計算に含めない）｜
+      Gross NAV採用（含み益への繰延税金負債は引かない＝税引前）｜
+      希薄化非考慮（転換社債は額面の負債として計上。分母は基本発行済株式数）
+    </div>
+    <div class="assumptions" style="margin-top:-16px;font-size:10px;color:var(--text3)">
+      ${esc(meta.reference_time_note)}
+    </div>
+    <div class="formula-block">
+      <div class="formula-title">mNAV の計算式</div>
+      <div class="formula-line">理論NAV ＝ BTC時価評価額 ＋ 手元現金等 － シニア・クレーム（有利子負債＋優先株式）</div>
+      <div class="formula-line">mNAVプレミアム ＝ 時価総額 ÷ 理論NAV</div>
+      <button class="btn-diagram" onclick="openDiagram()">図解を見る ▶</button>
+    </div>
+  `;
+}
+
+function renderAlerts(data) {
+  const overall = data._meta.overall_status;
+  const msgs = (data.alerts && data.alerts.messages) || [];
+  if (overall === 'complete' && msgs.length === 0) return '';
+
+  const cls = overall === 'failed' ? 'failed' : 'partial';
+  const title = overall === 'failed'
+    ? '⛔ BTC価格取得失敗 — mNAV算出不可'
+    : '⚠ 一部データが前回値（stale）で表示されています';
+
+  const items = msgs.map(m => `<li>${esc(m)}</li>`).join('');
+  return `
+    <div class="banner ${cls}">
+      <div class="banner-title">${title}</div>
+      ${items ? `<ul>${items}</ul>` : ''}
+    </div>
+  `;
+}
+
+function renderComparison(comparison, overall) {
+  const btcFailed = overall === 'failed';
+  const mstr_mnav = comparison.mnav_premium_mstr;
+  const meta_mnav = comparison.mnav_premium_metaplanet;
+  const spread    = comparison.spread;
+
+  function mnavBlock(val, status) {
+    if (btcFailed) {
+      return `<div class="failed-label">算出不可<br>BTC価格取得失敗</div>`;
+    }
+    if (val == null) {
+      return `<div class="no-data" style="font-size:28px">データ未投入</div>`;
+    }
+    const n = Number(val);
+    const cls = n >= 1 ? 'premium' : 'discount';
+    const pct = (n - 1) * 100;
+    const sign = pct >= 0 ? '+' : '';
+    return `
+      <div class="mnav-val ${cls}">${fmtMnav(val)}</div>
+      <div class="pct-val ${cls}">${sign}${pct.toFixed(1)}%</div>
+    `;
+  }
+
+  function spreadBlock() {
+    if (btcFailed || (mstr_mnav == null && meta_mnav == null)) {
+      return `<div class="spread-val no-data">—</div>`;
+    }
+    if (spread.value == null) {
+      return `<div class="spread-val no-data">—</div>`;
+    }
+    const s = Number(spread.value);
+    const cls = s > 0 ? 'premium' : s < 0 ? 'discount' : 'neutral';
+    const sign = s >= 0 ? '+' : '';
+    let desc = '';
+    if (s > 0)      desc = `MSTRの方が ${Math.abs(s).toFixed(2)}pt 割高に評価`;
+    else if (s < 0) desc = `メタプラの方が ${Math.abs(s).toFixed(2)}pt 割高に評価`;
+    else             desc = `両社のmNAV倍率は同値`;
+    return `
+      <div class="spread-val ${cls}">${sign}${s.toFixed(2)}<span style="font-size:14px">pt</span></div>
+      <div class="spread-desc">${desc}</div>
+    `;
+  }
+
+  return `
+    <h2>★ 日米 mNAV プレミアム比較</h2>
+    <div class="comparison-grid">
+      <div class="cmp-card">
+        <div class="ticker">NASDAQ: MSTR</div>
+        <div class="name">Strategy (MicroStrategy)</div>
+        ${mnavBlock(mstr_mnav, overall)}
+      </div>
+      <div class="cmp-center">
+        <div class="spread-label">スプレッド（pt差）</div>
+        ${spreadBlock()}
+        <div class="spread-desc" style="font-size:10px;color:var(--text3)">
+          倍率の引き算（%ではない）
+        </div>
+      </div>
+      <div class="cmp-card">
+        <div class="ticker">東証: 3350</div>
+        <div class="name">メタプラネット</div>
+        ${mnavBlock(meta_mnav, overall)}
+      </div>
+    </div>
+  `;
+}
+
+function renderCompanyCards(companies, overall) {
+  const btcFailed = overall === 'failed';
+
+  function card(co) {
+    const c = co.calc || {};
+    const sec = co.display_secondary_currency || {};
+    const isMstr = co.id === 'mstr';
+    const cur = co.base_currency;
+    const otherCur = isMstr ? 'JPY' : 'USD';
+    const statusCls = `status-${co.status}`;
+
+    function valOrLabel(obj, decimals, prefix, suffix) {
+      if (!obj || obj.value == null) {
+        return nullLabel(co.status, btcFailed);
+      }
+      return fmtNum(obj.value, decimals, prefix, suffix);
+    }
+
+    const mnavVal = c.mnav_premium && c.mnav_premium.value != null ? c.mnav_premium.value : null;
+    let mnavDisplay;
+    if (btcFailed || co.status === 'error') {
+      mnavDisplay = '<span class="status-failed">算出不可</span>';
+    } else if (mnavVal == null) {
+      mnavDisplay = '<span class="no-data">データ未投入</span>';
+    } else {
+      const n = Number(mnavVal);
+      const cls = n >= 1 ? 'premium' : 'discount';
+      mnavDisplay = `<span class="${cls}">${fmtMnav(mnavVal)}</span>`;
+    }
+
+    // 主要値
+    const navTotalPrimary = valOrLabel(c.nav_total,
+      cur === 'USD' ? 0 : 0,
+      cur === 'USD' ? '$' : '¥',
+      cur === 'USD' ? '' : '');
+    const mktCapPrimary = valOrLabel(c.market_cap,
+      0, cur === 'USD' ? '$' : '¥', '');
+
+    // 他通貨換算
+    const navSec = isMstr ? sec.nav_total_jpy : sec.nav_total_usd;
+    const mcSec  = isMstr ? sec.market_cap_jpy : sec.market_cap_usd;
+    const navSecFmt = navSec && navSec.value != null
+      ? fmtNum(navSec.value, 0, isMstr ? '¥' : '$', '')
+      : '<span class="no-data">—</span>';
+    const mcSecFmt = mcSec && mcSec.value != null
+      ? fmtNum(mcSec.value, 0, isMstr ? '¥' : '$', '')
+      : '<span class="no-data">—</span>';
+
+    return `
+      <div class="co-card ${statusCls}">
+        <div class="co-header">
+          <div>
+            <div class="co-name">${esc(co.display_name)}</div>
+            <div class="co-ticker">${esc(co.ticker)} / ${esc(cur)}</div>
+          </div>
+          ${statusBadge(co.status)}
+        </div>
+        <div class="co-rows">
+          <div class="co-row">
+            <span class="label">★ mNAV プレミアム</span>
+            <span class="val">${mnavDisplay}</span>
+          </div>
+          <div class="co-row">
+            <span class="label">プレミアム率</span>
+            <span class="val">${c.premium_pct && c.premium_pct.value != null ? fmtPct(c.premium_pct.value) : (btcFailed || co.status==='error' ? '<span class="status-failed">算出不可</span>' : '<span class="no-data">—</span>')}</span>
+          </div>
+          <div class="co-row">
+            <span class="label" style="color:var(--text3);font-size:10px">シニア・クレーム合計（負債＋優先株）</span>
+            <span class="val" style="color:var(--red)">${
+              c.senior_claims_total && c.senior_claims_total.value != null
+                ? fmtNum(c.senior_claims_total.value, 0, cur==='USD'?'$':'¥', '')
+                : (btcFailed || co.status==='error' ? '<span class="status-failed">算出不可</span>' : '<span class="no-data">—</span>')
+            }</span>
+          </div>
+          <div class="co-row">
+            <span class="label">理論 NAV 合計 (${cur})</span>
+            <div>
+              <div class="val">${navTotalPrimary}</div>
+              <div class="sub">${navSecFmt} (${otherCur}換算)</div>
+            </div>
+          </div>
+          <div class="co-row">
+            <span class="label">実時価総額 (${cur})</span>
+            <div>
+              <div class="val">${mktCapPrimary}</div>
+              <div class="sub">${mcSecFmt} (${otherCur}換算)</div>
+            </div>
+          </div>
+          <div class="co-row">
+            <span class="label">NAV / 株 (${cur})</span>
+            <span class="val">${valOrLabel(c.nav_per_share, 2, cur==='USD'?'$':'¥', '')}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    <h2>各社 mNAV 詳細</h2>
+    <div class="company-cards">
+      ${companies.map(card).join('')}
+    </div>
+  `;
+}
+
+function renderMarketData(md) {
+  const rows = [
+    { key:'btc_price_usd',        label:'BTC価格 (USD)',        prefix:'$',  dec:0 },
+    { key:'btc_price_jpy',        label:'BTC価格 (JPY)',        prefix:'¥',  dec:0 },
+    { key:'usdjpy',               label:'USD/JPY',              prefix:'',   dec:2 },
+    { key:'mstr_price_usd',       label:'MSTR株価 (USD)',       prefix:'$',  dec:2 },
+    { key:'metaplanet_price_jpy', label:'メタプラネット株価 (JPY)', prefix:'¥', dec:0 },
+  ];
+
+  const trs = rows.map(r => {
+    const item = md[r.key] || {};
+    const val = item.value != null ? fmtNum(item.value, r.dec, r.prefix, '') : '<span class="no-data">—</span>';
+    const stCls = `status-${item.status || 'ok'}`;
+    const src = item.source || item.note || '';
+    const basis = item.price_basis || '';
+    return `
+      <tr>
+        <td>${esc(r.label)}</td>
+        <td style="text-align:right">${val}</td>
+        <td>${fmtChange(item.change_pct)}</td>
+        <td><span class="${stCls}">${esc(item.status || '—')}</span></td>
+        <td style="color:var(--text3)">${fmtDate(item.as_of)}</td>
+        <td style="color:var(--text3)">${esc(src)}${basis ? ' / '+basis : ''}</td>
+      </tr>
+    `;
+  }).join('');
+
+  return `
+    <h2>毎日自動で取得しているデータ</h2>
+    <table class="md-table">
+      <thead>
+        <tr>
+          <th>項目</th>
+          <th style="text-align:right">値</th>
+          <th>前日比</th>
+          <th>ステータス</th>
+          <th>基準時刻</th>
+          <th>取得元</th>
+        </tr>
+      </thead>
+      <tbody>${trs}</tbody>
+    </table>
+  `;
+}
+
+function renderInputsSnapshot(companies) {
+  function companySection(co) {
+    const snap = co.inputs_snapshot || {};
+    const cur = co.base_currency;
+    const prefix = cur === 'USD' ? '$' : '¥';
+
+    const rows = Object.entries(snap).map(([k, v], idx, arr) => {
+      if (!v || typeof v !== 'object') return '';
+      const val = v.value != null ? String(v.value) : '<span class="no-data">未設定</span>';
+      const asOf = v.as_of ? fmtDate(v.as_of) : '<span class="no-data">—</span>';
+      const srcLabel = v.source_label
+        ? (v.source_url ? `<a href="${esc(v.source_url)}" target="_blank">${esc(v.source_label)}</a>` : esc(v.source_label))
+        : (v.source_url ? `<a href="${esc(v.source_url)}" target="_blank">リンク</a>` : '<span class="no-data">—</span>');
+      const fp = v.fiscal_period ? ` (${esc(v.fiscal_period)})` : '';
+      const mainRow = `
+        <tr>
+          <td>${layerBadge(v.layer)}</td>
+          <td><code>${esc(k)}</code></td>
+          <td>${val}${fp}</td>
+          <td>${asOf}</td>
+          <td>${srcLabel}</td>
+        </tr>
+      `;
+      // preferred_equity の直後にシニア・クレーム合計行を挿入
+      if (k === 'preferred_equity') {
+        const debt = snap.interest_bearing_debt && snap.interest_bearing_debt.value != null
+          ? Number(snap.interest_bearing_debt.value) : 0;
+        const pref = v.value != null ? Number(v.value) : 0;
+        const total = debt + pref;
+        const totalFmt = fmtNum(total, 0, prefix, '');
+        const subtotalRow = `
+          <tr style="background:var(--card2);border-top:1px solid var(--border)">
+            <td><span class="layer-badge" style="background:#2a1a1a;color:var(--red)">合計</span></td>
+            <td><code style="color:var(--red)">senior_claims_total</code></td>
+            <td style="color:var(--red);font-weight:700">${totalFmt}</td>
+            <td style="color:var(--text3)">—</td>
+            <td style="color:var(--text3)">debt + preferred_equity</td>
+          </tr>
+        `;
+        return mainRow + subtotalRow;
+      }
+      return mainRow;
+    }).join('');
+
+    return `
+      <div style="margin-bottom:10px">
+        <div style="font-weight:700;margin-bottom:6px;font-size:12px">${esc(co.display_name)}</div>
+        <table class="inputs-table">
+          <thead>
+            <tr><th>Layer</th><th>変数</th><th>値</th><th>基準日</th><th>出所</th></tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  return `
+    <h2>開示に基づき手動更新しているデータ（出所つき）</h2>
+    <div class="layer-legend">
+      <span class="leg-item"><span class="layer-badge layer-1">L1</span> 毎日自動取得</span>
+      <span class="leg-item"><span class="layer-badge layer-2">L2</span> 開示ごとに手動更新</span>
+      <span class="leg-item"><span class="layer-badge layer-3">L3</span> 四半期ごとに手動更新</span>
+    </div>
+    <details>
+      <summary>詳しく見る</summary>
+      <div class="details-body">
+        ${companies.map(companySection).join('<hr style="border-color:var(--border);margin:14px 0">')}
+      </div>
+    </details>
+  `;
+}
+
+function renderCalcDetail(companies) {
+  function companySection(co) {
+    const calc = co.calc || {};
+    const rows = Object.entries(calc)
+      .filter(([k]) => !k.startsWith('_'))
+      .map(([k, v]) => {
+        if (!v || typeof v !== 'object') return '';
+        const val = v.value != null
+          ? `<strong>${fmtNum(v.value, 4, '', v.unit ? ' '+v.unit : '')}</strong>`
+          : '<span class="no-data">算出不可 / 未投入</span>';
+        const cur = v.currency ? ` (${v.currency})` : '';
+        const note = v.note ? `<div style="color:var(--text3);font-size:10px">${esc(v.note)}</div>` : '';
+        return `
+          <tr>
+            <td><code>${esc(k)}</code></td>
+            <td>${val}${cur}</td>
+            <td><span class="formula-code">${esc(v.formula || '')}</span></td>
+            <td>${note}</td>
+          </tr>
+        `;
+      }).join('');
+
+    return `
+      <div style="margin-bottom:10px">
+        <div style="font-weight:700;margin-bottom:6px;font-size:12px">${esc(co.display_name)}</div>
+        <table class="inputs-table">
+          <thead>
+            <tr><th>変数</th><th>算出値</th><th>計算式</th><th>補足</th></tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  return `
+    <h2>計算の全過程</h2>
+    <details>
+      <summary>詳しく見る</summary>
+      <div class="details-body">
+        ${companies.map(companySection).join('<hr style="border-color:var(--border);margin:14px 0">')}
+      </div>
+    </details>
+  `;
+}
+
+function renderFooter() {
+  return `
+    <footer>
+      <p><strong>計算上の注記</strong></p>
+      <ol style="margin:6px 0 0 16px;line-height:2">
+        <li>
+          MSTRの優先株式（STRC/STRK/STRF/STRD 合計、想定元本残高 $15.5B）を、
+          普通株主に優先するシニア・クレームとして mNAV 算出時に控除している。
+          これにより普通株主が実際に受け取れる NAV の近似値を算出する。
+        </li>
+        <li>
+          メタプラネットの発行済株式数は前月末時点の開示値。
+          月中の新株予約権（MSCB 第27回等）行使による希薄化は未反映のため、
+          月末に近づくほど mNAV が過大評価される可能性がある。
+        </li>
+        <li>
+          メタプラネットの有利子負債・手元現金は一部が推測値・二次情報ベース（確度中）。
+          詳細は <code>crypto_config.json</code> の各 <code>note</code> 参照。
+        </li>
+      </ol>
+      <p style="margin-top:12px">
+        <strong>免責事項：</strong>
+        本サイトの情報は投資助言ではありません。情報提供を目的とし、投資判断は自己責任でお願いします。
+        計算値は公開情報に基づく推計であり、正確性を保証するものではありません。
+      </p>
+      <p style="margin-top:6px">
+        データソース：<a href="https://pypi.org/project/yfinance/" target="_blank">yfinance</a>（BTC-USD / USDJPY=X / MSTR / 3350.T） /
+        Strategy IR：<a href="https://www.strategy.com/" target="_blank">strategy.com</a> /
+        メタプラネット IR：<a href="https://metaplanet.jp/jp/ir" target="_blank">metaplanet.jp</a>
+      </p>
+      <p style="margin-top:6px">
+        <a href="https://xdbdb.com">← xdbdb.com トップへ</a>
+      </p>
+    </footer>
+  `;
+}
+
+// ===========================================================================
+// 計算フロー図モーダル
+// ===========================================================================
+function openDiagram() {
+  document.getElementById('diagram-modal').classList.add('active');
+}
+function closeDiagram() {
+  document.getElementById('diagram-modal').classList.remove('active');
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeDiagram();
+});
+
+// ===========================================================================
+// メイン
+// ===========================================================================
+async function main() {
+  const loadEl  = document.getElementById('loading');
+  const errEl   = document.getElementById('fetch-error');
+  const contEl  = document.getElementById('content');
+
+  try {
+    const res = await fetch('data.json?_=' + Date.now());
+    if (!res.ok) throw new Error(`HTTP ${res.status} — data.json の取得に失敗`);
+    const data = await res.json();
+
+    loadEl.style.display = 'none';
+    contEl.style.display = 'block';
+
+    const overall = (data._meta || {}).overall_status || 'complete';
+
+    contEl.innerHTML = [
+      renderHeader(data._meta || {}),
+      renderAlerts(data),
+      renderComparison(data.comparison || {}, overall),
+      renderCompanyCards(data.companies || [], overall),
+      renderMarketData(data.market_data || {}),
+      renderInputsSnapshot(data.companies || []),
+      renderCalcDetail(data.companies || []),
+      renderFooter(),
+    ].join('');
+
+  } catch (e) {
+    loadEl.style.display = 'none';
+    errEl.style.display  = 'block';
+    errEl.innerHTML = `
+      <p style="font-size:16px;margin-bottom:8px">⚠ データの読み込みに失敗しました</p>
+      <p>${esc(e.message)}</p>
+      <p style="margin-top:8px;font-size:12px;color:var(--text3)">
+        build_data.py を実行して data.json を生成してください。
+      </p>
+    `;
+  }
+}
+
+main();
+</script>
+</body>
+</html>
