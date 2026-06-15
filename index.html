@@ -284,6 +284,18 @@
       border-radius: 2px;
     }
 
+    /* ---- site-nav（回遊リンク）----
+       今後ページが増えたら renderHeader / renderFooter 内の site-nav に <a> を追加するだけでOK */
+    .site-nav {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px;
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--text3);
+    }
+    .site-nav-label { color: var(--accent); font-weight: 700; }
+    .site-nav a { color: var(--text2); }
+    .site-nav a:hover { color: var(--text); text-decoration: underline; }
+
     /* ---- footer ---- */
     footer {
       margin-top: 40px;
@@ -512,6 +524,12 @@ function renderHeader(meta) {
   return `
     <div class="site-header">
       <div class="site-title">暗号通貨トレジャリー企業 mNAVモニター</div>
+      <!-- 回遊リンク①：タイトル右横 / 今後ページが増えたらここに <a> を追加 -->
+      <nav class="site-nav">
+        <span class="site-nav-label">数理投資情報部の他の分析 ▶</span>
+        <a href="https://nav.xdbdb.com/">SBG 理論株価モニター</a>
+        <a href="https://xdbdb.com/">トップ</a>
+      </nav>
       <div class="site-subtitle">BTC保有企業の mNAV（修正純資産価値）プレミアムを毎朝自動計算 — xdbdb.com</div>
       <div class="meta-row">
         <div class="meta-item">基準時刻：<span>${fmtDate(meta.reference_time_jst)}</span></div>
@@ -912,6 +930,12 @@ function renderFooter() {
           詳細は <code>crypto_config.json</code> の各 <code>note</code> 参照。
         </li>
       </ol>
+      <!-- 回遊リンク②：免責事項の上 / 今後ページが増えたらここに <a> を追加 -->
+      <nav class="site-nav" style="margin-top:16px;margin-bottom:12px">
+        <span class="site-nav-label">数理投資情報部の他の分析 ▶</span>
+        <a href="https://nav.xdbdb.com/">SBG 理論株価モニター</a>
+        <a href="https://xdbdb.com/">トップ</a>
+      </nav>
       <p style="margin-top:12px">
         <strong>免責事項：</strong>
         本サイトの情報は投資助言ではありません。情報提供を目的とし、投資判断は自己責任でお願いします。
