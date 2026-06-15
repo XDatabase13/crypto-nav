@@ -11,6 +11,11 @@ on:
     - cron: '30 22 * * *'  # JST 07:30
   workflow_dispatch:         # 手動実行も可能
 
+# 複数cronが同時発火したとき直列化してpush conflictを防ぐ
+concurrency:
+  group: update-mnav-data
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -44,6 +49,7 @@ jobs:
           else
             TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
             git commit -m "auto: update mNAV data ${TIMESTAMP}"
+            git pull --rebase origin master
             git push
             echo "data.json をコミット・プッシュしました。"
           fi
