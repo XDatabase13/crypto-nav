@@ -2,8 +2,8 @@
   "_meta": {
     "schema_version": "1.0",
     "description": "暗号通貨トレジャリー企業 mNAV算出用 設定ファイル。レイヤー2(イベント駆動・手動)とレイヤー3(四半期固定・手動)の変数を管理する。レイヤー1(BTC価格/為替/株価)はこのファイルに含めず、バッチが実行時にAPI取得する。",
-    "last_edited_at": "2026-06-15T12:00:00+09:00",
-    "last_edited_note": "実データ投入(Geminiリサーチ結果)。MSTRに優先株式(preferred_equity)を追加=シニア・クレームとして控除。計算式: nav_total = btc_value + cash - debt - preferred_equity。"
+    "last_edited_at": "2026-06-18T00:00:00+09:00",
+    "last_edited_note": "6項目更新(2026-06-18)。(A)メタプラネット有利子負債 141,074→47,700百万円(analytics.metaplanet.jp確定値)。(B)メタプラネット優先株 0→23,600百万円(B種MERCURY)。(C)MSTR現金 2.209→1.100B USD(strategy.comダッシュボード)。(D)MSTR BTC保有量 845,256→846,842枚。(E)MSTR優先株 15.500→15.475B USD。(F)MSTR有利子負債 6.714→6.754B USD。"
   },
 
   "global": {
@@ -31,12 +31,12 @@
         "_comment": "イベント駆動。適時開示が出た当日に手動更新する。各変数は値＋根拠開示の出所＋日付を必ずセットで持つ。",
 
         "btc_holdings": {
-          "value": 845256,
+          "value": 846842,
           "unit": "BTC",
-          "as_of": "2026-06-07",
+          "as_of": "2026-06-17",
           "source_type": "disclosure",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1050446/000119312526260709/mstr-20260504.htm",
-          "source_label": "Form 8-K (June 8, 2026)",
+          "source_url": "https://www.strategy.com/",
+          "source_label": "Strategy公式ダッシュボード strategy.com（BTC）",
           "note": "保有BTC総量(枚)。買い増し開示のたびに更新。"
         },
 
@@ -51,13 +51,13 @@
         },
 
         "interest_bearing_debt": {
-          "value": 6713659000,
+          "value": 6754000000,
           "unit": "USD",
-          "as_of": "2026-05-25",
+          "as_of": "2026-06-17",
           "source_type": "disclosure",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1050446/000119312526237907/mstr-ex99_1.htm",
-          "source_label": "Press Release (May 26, 2026)",
-          "note": "有利子負債総額(額面)=転換社債6本の合計。公表値$6.7Bと一致。2029satの元本$3Bのうち$1.5Bを2026/5に買入消却済(残$1.5B反映)。",
+          "source_url": "https://www.strategy.com/",
+          "source_label": "Strategy公式ダッシュボード strategy.com（Debt）",
+          "note": "有利子負債総額(額面)。公式ダッシュボード最新値。内訳は2026-05-25 Press Release時点のもの(合計は最新値と一致しない)。",
           "breakdown": [
             { "label": "2028 Convertible Notes", "amount": 1010000000, "maturity": "2028", "type": "convertible_note", "note": "クーポン0.625%。2024年9月発行。" },
             { "label": "2029 Convertible Notes", "amount": 1500000000, "maturity": "2029", "type": "convertible_note", "note": "クーポン0.00%。元本$3Bのうち半分を2026年5月に買入消却。" },
@@ -69,15 +69,15 @@
         },
 
         "preferred_equity": {
-          "value": 15500000000,
+          "value": 15475000000,
           "unit": "USD",
-          "as_of": "2026-05-25",
+          "as_of": "2026-06-17",
           "source_type": "disclosure",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1050446/000119312526237907/mstr-ex99_1.htm",
-          "source_label": "Press Release (May 26, 2026)",
+          "source_url": "https://www.strategy.com/",
+          "source_label": "Strategy公式ダッシュボード strategy.com（Pref）",
           "note": "優先株式の想定元本残高(Aggregate Notional Amount)。普通株主に優先するシニア・クレームとしてmNAV算出時に分子から控除する(清算優先額=想定元本の近似)。市場ベンチマーク(EV基準)と整合させるため必須。",
           "breakdown": [
-            { "label": "STRC/STRK/STRF/STRD 合計", "amount": 15500000000, "type": "preferred_stock", "note": "STRCは年率11.5%配当等。種別ごとの内訳は開示更新時に分解可。" }
+            { "label": "STRC/STRK/STRF/STRD 合計", "amount": 15475000000, "type": "preferred_stock", "note": "STRCは年率11.5%配当等。種別ごとの内訳は開示更新時に分解可。" }
           ]
         }
       },
@@ -85,14 +85,13 @@
       "layer3": {
         "_comment": "四半期固定。決算発表時にのみ更新する。",
         "cash_and_equivalents": {
-          "value": 2209245000,
+          "value": 1100000000,
           "unit": "USD",
-          "as_of": "2026-03-31",
-          "source_type": "earnings",
-          "fiscal_period": "Q1 2026",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1050446/000105044626000031/mstr-20260331.htm",
-          "source_label": "Form 10-Q (Q1 2026)",
-          "note": "手元現金等(現金+現金同等物+拘束性預金)。四半期固定。USD Reserveでなく決算期末確定値を採用。"
+          "as_of": "2026-06-17",
+          "source_type": "disclosure",
+          "source_url": "https://www.strategy.com/",
+          "source_label": "Strategy公式ダッシュボード strategy.com（USD Reserve）",
+          "note": "手元現金等(USD Reserve)。公式ダッシュボード最新値を採用。"
         }
       },
 
@@ -139,28 +138,30 @@
         },
 
         "interest_bearing_debt": {
-          "value": 141074000000,
+          "value": 47700000000,
           "unit": "JPY",
-          "as_of": "2026-04-24",
+          "as_of": "2026-03-31",
           "source_type": "disclosure",
-          "source_url": "https://finance.yahoo.co.jp/news/detail/79318e9f55b60a859a823bac4f0d688017f4961f",
-          "source_label": "Q1決算短信 + 第20回普通社債発行に関するお知らせ",
-          "note": "★確度中(推測混在・要再確認)。Q1末の信用ファシリティ(BTC担保融資)約610.74億円 + 第20回普通社債80億円 の合算推測値。基準日が混在(融資=3月末/社債=4/24)。負債は流動的(Siiibo買収借入枠等)。",
+          "source_url": "https://analytics.metaplanet.jp/?lang=ja",
+          "source_label": "メタプラネット公式 analytics.metaplanet.jp クレジット概要（負債残高合計）",
+          "note": "有利子負債残高。Q1末(2026-03-31)確定値。第20回普通社債8,000百万円＋クレジットファシリティ実残高39,700百万円の合計。",
           "breakdown": [
-            { "label": "信用ファシリティ(BTC担保融資)", "amount": 61074000000, "maturity": null, "type": "credit_facility", "note": "約3.02億USD建て借入。Q1(3月末)時点。USD建てのため為替で円換算額が変動。" },
-            { "label": "第20回普通社債", "amount": 80000000000, "maturity": "2027-04-23", "type": "bond", "note": "無利息。EVO FUND引受。2026/4/24発行、全額BTC購入充当。" }
+            { "label": "第20回普通社債", "amount": 8000000000, "maturity": "2027-04-23", "type": "bond", "note": "無利息。EVO FUND引受。80億円。" },
+            { "label": "クレジットファシリティ実残高", "amount": 39700000000, "maturity": null, "type": "credit_facility", "note": "397億円。Q1末(2026-03-31)実残高。" }
           ]
         },
 
         "preferred_equity": {
-          "value": 0,
+          "value": 23600000000,
           "unit": "JPY",
-          "as_of": "2026-06-15",
+          "as_of": "2026-03-31",
           "source_type": "disclosure",
-          "source_url": null,
-          "source_label": "該当なし",
-          "note": "メタプラネットは優先株式を発行していないため0。MSTRと同一の数式(シニア・クレーム控除)で処理するための項目。",
-          "breakdown": []
+          "source_url": "https://analytics.metaplanet.jp/?lang=ja",
+          "source_label": "メタプラネット公式 analytics.metaplanet.jp（優先株残高合計）",
+          "note": "B種種類株式（MERCURY）の想定元本残高。シニア・クレームとして控除（MSTRと同一ロジック）。",
+          "breakdown": [
+            { "label": "B種種類株式（MERCURY）", "amount": 23600000000, "shares": 23610000, "type": "preferred_stock", "note": "B種MERCURY。想定元本23,600百万円(23,610,000株)。" }
+          ]
         }
       },
 
