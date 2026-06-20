@@ -343,10 +343,12 @@ def calc_company(
 # =========================================================================
 def build_data():
     generated_at = now_jst()
+    today_str = generated_at.strftime("%Y-%m-%d")
     alerts: list[str] = []
 
     config    = load_json(CONFIG_PATH)
     prev_data = load_json(DATA_PATH)
+    prev_timeseries: list = prev_data.get("timeseries", [])
 
     companies_by_id = {c["id"]: c for c in config.get("companies", [])}
 
@@ -503,6 +505,39 @@ def build_data():
     }
 
     # -----------------------------------------------------------------------
+    # timeseries追記（kioxia-sandiskと同一作法）
+    # 遡及書き換え禁止: 追記のみ。過去エントリは変更しない。
+    # -----------------------------------------------------------------------
+    ts_today_exists = any(e["date"] == today_str for e in prev_timeseries)
+    if ts_today_exists:
+        print(f"[SKIP timeseries] {today_str} のエントリは既に存在します（再実行を検知）。")
+        new_timeseries = prev_timeseries
+    elif overall_status == "failed":
+        print(f"[SKIP timeseries] overall_status=failed のため当日エントリを追加しません（mNAVがnull）。")
+        new_timeseries = prev_timeseries
+    else:
+        mstr_prem_pct  = mstr_result["calc"].get("premium_pct", {}).get("value")
+        mstr_nav_total = mstr_result["calc"].get("nav_total", {}).get("value")
+        meta_prem_pct  = meta_result["calc"].get("premium_pct", {}).get("value")
+        meta_nav_total = meta_result["calc"].get("nav_total", {}).get("value")
+        ts_entry = {
+            "date": today_str,
+            "mstr": {
+                "mnav_premium": mstr_mnav,
+                "premium_pct":  mstr_prem_pct,
+                "nav_total":    mstr_nav_total,
+            },
+            "metaplanet": {
+                "mnav_premium": meta_mnav,
+                "premium_pct":  meta_prem_pct,
+                "nav_total":    meta_nav_total,
+            },
+            "status": overall_status,
+        }
+        new_timeseries = prev_timeseries + [ts_entry]
+        print(f"[timeseries] {today_str} のエントリを追加しました。")
+
+    # -----------------------------------------------------------------------
     # 出力
     # -----------------------------------------------------------------------
     ref_time = generated_at.replace(hour=7, minute=0, second=0, microsecond=0)
@@ -522,6 +557,25 @@ def build_data():
                 "per_item_status": "ok=正常取得 / stale=取得失敗し前回値保持中 / failed=取得失敗かつ代用もしない(BTC価格のみ)",
                 "company_status":  "ok=算出成功 / partial=非クリティカル項目がstaleだが算出は実行 / error=BTC価格failedにより算出不可",
                 "retry_policy":    f"全レイヤー1項目は項目ごとに最大{MAX_RETRIES}回リトライ({RETRY_INTERVAL}秒間隔)。株価・為替はリトライ全滅でstale(前回値保持)。BTC価格のみfailed(代用せず算出不可)。",
+            },
+            "_timeseries_note": (
+                "timeseriesは日次バッチが追記のみ（遡及書き換え禁止）。"
+                "各エントリは書き込み後に変更しない。"
+                "overall_status=failedの日はエントリを追加しない（null mNAVを記録しない）。"
+            ),
+            "_timeseries_entry_schema": {
+                "date": "YYYY-MM-DD (JST基準)",
+                "mstr": {
+                    "mnav_premium": "float|null — mNAV倍率（market_cap / nav_total）",
+                    "premium_pct":  "float|null — プレミアム率(%) = (mnav_premium - 1) × 100",
+                    "nav_total":    "float|null — NAV合計（USD）",
+                },
+                "metaplanet": {
+                    "mnav_premium": "float|null — mNAV倍率（market_cap / nav_total）",
+                    "premium_pct":  "float|null — プレミアム率(%) = (mnav_premium - 1) × 100",
+                    "nav_total":    "float|null — NAV合計（JPY）",
+                },
+                "status": "complete | partial — overall_statusのコピー。failedの日はエントリなし。",
             },
         },
         "market_data": {
@@ -556,6 +610,7 @@ def build_data():
             "_comment": "overall_status が complete 以外のとき UI に表示する。",
             "messages": alerts,
         },
+        "timeseries": new_timeseries,
     }
 
     save_json(DATA_PATH, output)
