@@ -2,8 +2,8 @@
   "_meta": {
     "schema_version": "1.0",
     "description": "暗号通貨トレジャリー企業 mNAV算出用 設定ファイル。レイヤー2(イベント駆動・手動)とレイヤー3(四半期固定・手動)の変数を管理する。レイヤー1(BTC価格/為替/株価)はこのファイルに含めず、バッチが実行時にAPI取得する。",
-    "last_edited_at": "2026-06-18T00:00:00+09:00",
-    "last_edited_note": "6項目更新(2026-06-18)。(A)メタプラネット有利子負債 141,074→47,700百万円(analytics.metaplanet.jp確定値)。(B)メタプラネット優先株 0→23,600百万円(B種MERCURY)。(C)MSTR現金 2.209→1.100B USD(strategy.comダッシュボード)。(D)MSTR BTC保有量 845,256→846,842枚。(E)MSTR優先株 15.500→15.475B USD。(F)MSTR有利子負債 6.714→6.754B USD。"
+    "last_edited_at": "2026-06-22T00:00:00+09:00",
+    "last_edited_note": "2項目更新(2026-06-22)。(A)MSTR BTC保有量 846,842→847,363枚(Strategy 8-K 2026-06-22 / as_of 2026-06-21)。(B)MSTR USD Reserve 1.100→1.400B USD(Strategy 8-K 2026-06-22 / strategy.com dashboard / as_of 2026-06-21)。"
   },
 
   "global": {
@@ -31,12 +31,12 @@
         "_comment": "イベント駆動。適時開示が出た当日に手動更新する。各変数は値＋根拠開示の出所＋日付を必ずセットで持つ。",
 
         "btc_holdings": {
-          "value": 846842,
+          "value": 847363,
           "unit": "BTC",
-          "as_of": "2026-06-17",
+          "as_of": "2026-06-21",
           "source_type": "disclosure",
           "source_url": "https://www.strategy.com/",
-          "source_label": "Strategy公式ダッシュボード strategy.com（BTC）",
+          "source_label": "Strategy 8-K 2026-06-22 BTC Update",
           "note": "保有BTC総量(枚)。買い増し開示のたびに更新。"
         },
 
@@ -85,12 +85,12 @@
       "layer3": {
         "_comment": "四半期固定。決算発表時にのみ更新する。",
         "cash_and_equivalents": {
-          "value": 1100000000,
+          "value": 1400000000,
           "unit": "USD",
-          "as_of": "2026-06-17",
+          "as_of": "2026-06-21",
           "source_type": "disclosure",
           "source_url": "https://www.strategy.com/",
-          "source_label": "Strategy公式ダッシュボード strategy.com（USD Reserve）",
+          "source_label": "Strategy 8-K 2026-06-22 USD Reserve Update / strategy.com dashboard",
           "note": "手元現金等(USD Reserve)。公式ダッシュボード最新値を採用。"
         }
       },
