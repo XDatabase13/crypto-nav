@@ -423,6 +423,37 @@
       .cmp-center { flex-direction: row; justify-content: space-around; }
       .company-cards { grid-template-columns: 1fr; }
     }
+
+    /* ---- lead subtitle (長文リード) ---- */
+    .lead-subtitle {
+      color: var(--text2);
+      font-size: 13px;
+      margin-top: 8px;
+      line-height: 1.8;
+      max-width: 700px;
+    }
+
+    /* ---- SEO static section ---- */
+    .seo-section {
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+    .seo-section h2 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin: 24px 0 6px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--border2);
+    }
+    .seo-section h2:first-of-type { margin-top: 0; }
+    .seo-section p {
+      font-size: 12px;
+      color: var(--text2);
+      line-height: 1.9;
+      margin-top: 4px;
+    }
   </style>
 </head>
 <body>
@@ -438,6 +469,21 @@
   <div id="loading">データを読み込み中…</div>
   <div id="fetch-error" style="display:none"></div>
   <div id="content" style="display:none"></div>
+
+  <!-- SEO 解説（静的HTML・クローラー用） -->
+  <section class="seo-section">
+    <h2>mNAVとプレミアムの基本</h2>
+    <p>mNAV（修正純資産価値倍率）は、企業の時価総額を、その企業が保有するビットコインなどの暗号資産の純資産価値（NAV）で割った倍率です。mNAVが1倍なら株価は保有資産とほぼ等価、1倍を超えていれば「プレミアム」が、下回っていれば「ディスカウント」が付いている状態を意味します。メタプラネットやStrategy（旧MicroStrategy）といったビットコイン保有企業の多くは、このmNAVが1倍を大きく超える水準で取引されてきました。</p>
+
+    <h2>なぜプレミアム（mNAV&gt;1）が生まれるのか</h2>
+    <p>「保有資産より高い値段で株が買われる」のは一見不合理ですが、いくつかの合理的な背景があります。</p>
+    <p>第一に、資金調達による1株あたり資産の増加です。株価が保有資産価値を上回っている（mNAV&gt;1の）局面では、企業は新株発行などで調達した資金でさらにビットコインを買い増すことができ、これが1株あたりのビットコイン保有量を増やす効果を生みます。プレミアムが高いほど、この資本政策が有利に働きます。</p>
+    <p>第二に、保有資産を使った収益化です。一部の企業は、保有するビットコインを活用したオプション取引などを通じて、追加の収益を生み出す事業を展開しています。単なる「ビットコインの保管庫」ではなく、保有資産からキャッシュフローを生む主体とみなされることが、プレミアムの一因となります。</p>
+    <p>第三に、税制や投資アクセスの面での利便性です。個人が暗号資産を直接売買する場合と、株式を通じて間接的に保有する場合とでは、課税の扱いや投資のしやすさが異なります。証券口座を通じてビットコインへのエクスポージャーを得たい投資家にとって、これらの株式が受け皿となる側面があります。</p>
+
+    <h2>プレミアムは永続しない</h2>
+    <p>一方で、mNAVのプレミアムは市場心理に左右され、常に変動します。相場の過熱時には拡大し、リスクオフ局面では縮小します。とりわけmNAVが1倍を下回る（ディスカウントに転じる）と、前述の資金調達による買い増しが機能しにくくなり、企業価値の成長サイクルが鈍るリスクがあります。本サイトでmNAVの推移を継続的に観測する意義はここにあります。</p>
+  </section>
 
 </div>
 
@@ -545,7 +591,7 @@ function renderHeader(meta) {
         <a href="https://xdbdb.com/ai-manifold/">AI業界地図</a>
         <a href="https://xdbdb.com/">トップ</a>
       </nav>
-      <div class="site-subtitle">BTC保有企業の mNAV（修正純資産価値）プレミアムを毎朝自動計算 — xdbdb.com</div>
+      <div class="lead-subtitle">ビットコインを大量保有する企業（メタプラネット、Strategy／旧MicroStrategyなど）の時価総額が、保有暗号資産の純資産価値に対して何倍か（mNAVプレミアム）を毎営業日自動算出します。「なぜ直接ビットコインを買わず、割高に見える株を買うのか」という疑問に、定量的な視点を提供します。</div>
       <div class="meta-row">
         <div class="meta-item">基準時刻：<span>${fmtDate(meta.reference_time_jst)}</span></div>
         <div class="meta-item">生成：<span>${fmtDate(meta.generated_at)}</span></div>
