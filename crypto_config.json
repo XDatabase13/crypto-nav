@@ -2,8 +2,8 @@
   "_meta": {
     "schema_version": "1.0",
     "description": "暗号通貨トレジャリー企業 mNAV算出用 設定ファイル。レイヤー2(イベント駆動・手動)とレイヤー3(四半期固定・手動)の変数を管理する。レイヤー1(BTC価格/為替/株価)はこのファイルに含めず、バッチが実行時にAPI取得する。",
-    "last_edited_at": "2026-06-22T00:00:00+09:00",
-    "last_edited_note": "2項目更新(2026-06-22)。(A)MSTR BTC保有量 846,842→847,363枚(Strategy 8-K 2026-06-22 / as_of 2026-06-21)。(B)MSTR USD Reserve 1.100→1.400B USD(Strategy 8-K 2026-06-22 / strategy.com dashboard / as_of 2026-06-21)。"
+    "last_edited_at": "2026-07-03T00:00:00+09:00",
+    "last_edited_note": "6項目更新(2026-07-03)。メタプラ:(A)BTC保有量 40,177→43,000枚 (B)発行済株式数 1,281,256,904→1,281,283,624株 (C)有利子負債 477→748億円(いずれも開示2026-07-02 / analytics.metaplanet.jp / as_of 2026-06-30)。MSTR:(D)発行済株式数 345.926M→371.614M株 (E)優先株 15.475→15.461B USD (F)現金 1.40→2.55B USD(strategy.com dashboard 2026-07-02参照 / as_of 2026-06-28)。"
   },
 
   "global": {
@@ -41,13 +41,13 @@
         },
 
         "shares_outstanding": {
-          "value": 345926000,
+          "value": 371614000,
           "unit": "shares",
-          "as_of": "2026-03-31",
+          "as_of": "2026-06-28",
           "source_type": "disclosure",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1050446/000105044626000031/mstr-20260331.htm",
-          "source_label": "Form 10-Q (Q1 2026)",
-          "note": "基本発行済株式数(希薄化前)。クラスA 326,286,000株 + クラスB 19,640,000株 の合算。ATMで日々増加するため8-Kのたびに加算修正が望ましい(現在値は3/31時点)。"
+          "source_url": "https://www.strategy.com/",
+          "source_label": "Strategy公式ダッシュボード strategy.com（2026-07-02参照）",
+          "note": "基本発行済株式数(希薄化前)。公式ダッシュボード掲載値。ATMで日々増加するため開示のたびに更新が望ましい。"
         },
 
         "interest_bearing_debt": {
@@ -69,15 +69,15 @@
         },
 
         "preferred_equity": {
-          "value": 15475000000,
+          "value": 15461000000,
           "unit": "USD",
-          "as_of": "2026-06-17",
+          "as_of": "2026-06-28",
           "source_type": "disclosure",
           "source_url": "https://www.strategy.com/",
           "source_label": "Strategy公式ダッシュボード strategy.com（Pref）",
           "note": "優先株式の想定元本残高(Aggregate Notional Amount)。普通株主に優先するシニア・クレームとしてmNAV算出時に分子から控除する(清算優先額=想定元本の近似)。市場ベンチマーク(EV基準)と整合させるため必須。",
           "breakdown": [
-            { "label": "STRC/STRK/STRF/STRD 合計", "amount": 15475000000, "type": "preferred_stock", "note": "STRCは年率11.5%配当等。種別ごとの内訳は開示更新時に分解可。" }
+            { "label": "STRC/STRK/STRF/STRD 合計", "amount": 15461000000, "type": "preferred_stock", "note": "STRCは年率11.5%配当等。種別ごとの内訳は開示更新時に分解可。" }
           ]
         }
       },
@@ -85,12 +85,12 @@
       "layer3": {
         "_comment": "四半期固定。決算発表時にのみ更新する。",
         "cash_and_equivalents": {
-          "value": 1400000000,
+          "value": 2550000000,
           "unit": "USD",
-          "as_of": "2026-06-21",
+          "as_of": "2026-06-28",
           "source_type": "disclosure",
           "source_url": "https://www.strategy.com/",
-          "source_label": "Strategy 8-K 2026-06-22 USD Reserve Update / strategy.com dashboard",
+          "source_label": "Strategy公式ダッシュボード strategy.com（2026-07-02参照）",
           "note": "手元現金等(USD Reserve)。公式ダッシュボード最新値を採用。"
         }
       },
@@ -118,36 +118,35 @@
         "_comment": "イベント駆動。適時開示(TDnet)が出た当日に手動更新。",
 
         "btc_holdings": {
-          "value": 40177,
+          "value": 43000,
           "unit": "BTC",
-          "as_of": "2026-03-31",
+          "as_of": "2026-06-30",
           "source_type": "disclosure",
-          "source_url": "https://finance-frontend-pc-dist.west.edge.storage-yahoo.jp/disclosure/20260513/20260513530380.pdf",
-          "source_label": "2026年12月期 第1四半期決算説明資料",
-          "note": "保有BTC総量(枚)。Q1に5,075 BTC追加取得し累計40,177。買い増し開示のたびに更新。"
+          "source_url": "https://analytics.metaplanet.jp/?lang=ja",
+          "source_label": "適時開示 2026-07-02 / analytics.metaplanet.jp",
+          "note": "保有BTC総量(枚)。累計43,000 BTC。買い増し開示のたびに更新。"
         },
 
         "shares_outstanding": {
-          "value": 1281256904,
+          "value": 1281283624,
           "unit": "shares",
-          "as_of": "2026-05-31",
+          "as_of": "2026-06-30",
           "source_type": "disclosure",
-          "source_url": "https://finance-frontend-pc-dist.west.edge.storage-yahoo.jp/disclosure/20260601/20260601557325.pdf",
-          "source_label": "第27回新株予約権の月間行使状況に関するお知らせ",
-          "note": "★希薄化タイムラグ注意。発行済1,281,283,624株から自己株26,720株を控除した実質値。新株予約権(MSCB)が日々行使され株式数は膨張するが、開示は月初の前月末分のみ。月末に近づくほどmNAVが過大評価されるバイアスあり(UIで注記必須)。"
+          "source_url": "https://analytics.metaplanet.jp/?lang=ja",
+          "source_label": "適時開示 2026-07-02 / analytics.metaplanet.jp",
+          "note": "★希薄化タイムラグ注意。2026-06-30時点の発行済株式数。新株予約権(MSCB)が日々行使され株式数は膨張するが、開示は月初の前月末分のみ。月末に近づくほどmNAVが過大評価されるバイアスあり(UIで注記必須)。"
         },
 
         "interest_bearing_debt": {
-          "value": 47700000000,
+          "value": 74800000000,
           "unit": "JPY",
-          "as_of": "2026-03-31",
+          "as_of": "2026-06-30",
           "source_type": "disclosure",
           "source_url": "https://analytics.metaplanet.jp/?lang=ja",
           "source_label": "メタプラネット公式 analytics.metaplanet.jp クレジット概要（負債残高合計）",
-          "note": "有利子負債残高。Q1末(2026-03-31)確定値。第20回普通社債8,000百万円＋クレジットファシリティ実残高39,700百万円の合計。",
+          "note": "有利子負債残高。2026-06-30時点の負債残高合計748億円。",
           "breakdown": [
-            { "label": "第20回普通社債", "amount": 8000000000, "maturity": "2027-04-23", "type": "bond", "note": "無利息。EVO FUND引受。80億円。" },
-            { "label": "クレジットファシリティ実残高", "amount": 39700000000, "maturity": null, "type": "credit_facility", "note": "397億円。Q1末(2026-03-31)実残高。" }
+            { "label": "負債残高合計", "amount": 74800000000, "maturity": null, "type": "total", "note": "748億円（2026-06-30時点）。社債・クレジットファシリティの内訳は次回開示で確認。" }
           ]
         },
 
