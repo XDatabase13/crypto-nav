@@ -61,9 +61,9 @@
       "source": "yfinance:MSTR"
     },
     "metaplanet_price_jpy": {
-      "value": 226.0,
-      "as_of": "2026-07-08T00:00:00+09:00",
-      "change_pct": 0.0,
+      "value": 238.0,
+      "as_of": "2026-07-09T15:30:00+09:00",
+      "change_pct": 5.3097,
       "status": "ok",
       "market": "JP",
       "price_basis": "前日東京終値",
@@ -236,8 +236,8 @@
           "layer": 1
         },
         "metaplanet_price_jpy": {
-          "value": 226.0,
-          "as_of": "2026-07-08T00:00:00+09:00",
+          "value": 238.0,
+          "as_of": "2026-07-09T15:30:00+09:00",
           "layer": 1
         }
       },
@@ -270,18 +270,18 @@
           "formula": "nav_total / shares_outstanding"
         },
         "market_cap": {
-          "value": 289570099024.0,
+          "value": 304945502512.0,
           "currency": "JPY",
           "formula": "metaplanet_price_jpy × shares_outstanding"
         },
         "mnav_premium": {
-          "value": 0.789073,
+          "value": 0.830971,
           "unit": "x",
           "formula": "market_cap / nav_total",
           "note": "1超=プレミアム、1未満=ディスカウント。"
         },
         "premium_pct": {
-          "value": -21.0927,
+          "value": -16.9029,
           "unit": "%",
           "formula": "(mnav_premium - 1) × 100"
         }
@@ -292,7 +292,7 @@
           "formula": "nav_total / usdjpy"
         },
         "market_cap_usd": {
-          "value": 1783275782.89,
+          "value": 1877962992.6,
           "formula": "market_cap / usdjpy"
         }
       },
@@ -307,9 +307,9 @@
   "comparison": {
     "_comment": "mnav_premium は無次元(倍率)なので日米直接比較可能。",
     "mnav_premium_mstr": 1.028598,
-    "mnav_premium_metaplanet": 0.789073,
+    "mnav_premium_metaplanet": 0.830971,
     "spread": {
-      "value": 0.2395,
+      "value": 0.1976,
       "unit": "pt",
       "formula": "mstr - metaplanet",
       "note": "mNAV倍率のポイント差(倍率同士の引き算)であって%ではない。例:MSTR 1.50x・メタプラ 1.20x なら 0.30pt。"
@@ -566,8 +566,8 @@
         "nav_total": 34352934844.84
       },
       "metaplanet": {
-        "mnav_premium": 0.741712,
-        "premium_pct": -25.8288,
+        "mnav_premium": 0.78677,
+        "premium_pct": -21.323,
         "nav_total": 369677908000.0
       },
       "status": "complete"
@@ -580,8 +580,8 @@
         "nav_total": 34308319196.89
       },
       "metaplanet": {
-        "mnav_premium": 0.787505,
-        "premium_pct": -21.2495,
+        "mnav_premium": 0.784035,
+        "premium_pct": -21.5965,
         "nav_total": 369332919000.0
       },
       "status": "complete"
@@ -608,8 +608,8 @@
         "nav_total": 33920786334.87
       },
       "metaplanet": {
-        "mnav_premium": 0.789073,
-        "premium_pct": -21.0927,
+        "mnav_premium": 0.830971,
+        "premium_pct": -16.9029,
         "nav_total": 366974928000.0
       },
       "status": "complete"

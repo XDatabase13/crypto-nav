@@ -13,6 +13,7 @@ import time
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
+import pandas as pd
 import yfinance as yf
 
 # Windows の cp932 端末でも Unicode 文字を安全に出力する
@@ -88,10 +89,34 @@ def prev_market_value(prev_data: dict, key: str):
 # =========================================================================
 # レイヤー1 取得（リトライ付き）
 # =========================================================================
+def _quote_latest(ticker_obj) -> tuple:
+    """
+    チャートAPIメタ（quote相当）から直近約定値と時刻を返す。
+    2026-07-06頃からYahooのチャートAPIが東証・韓国取引所などの銘柄で
+    「引け後〜翌営業日の反映まで」直近セッションの日足バーを返さなくなったため、
+    日足の最終バーが古い場合のフォールバックとして使う。
+    直近の history() 呼び出しのレスポンスを再利用するので追加リクエストは発生しない。
+    Returns: (price: float|None, dt: datetime|None)  — dt は取引所タイムゾーン
+    """
+    try:
+        meta    = ticker_obj.get_history_metadata()
+        price   = meta.get("regularMarketPrice")
+        epoch   = meta.get("regularMarketTime")
+        tz_name = meta.get("exchangeTimezoneName")
+        if price is None or epoch is None or tz_name is None:
+            return None, None
+        dt = pd.Timestamp(epoch, unit="s", tz="UTC").tz_convert(tz_name).to_pydatetime()
+        return float(price), dt
+    except Exception:
+        return None, None
+
+
 def fetch_close(ticker_str: str) -> tuple:
     """
     yfinance でティッカーの直近終値・タイムスタンプ・前日比を返す。
     日米混在問題（片方がNaN）は period="5d" + dropna() で対処。
+    日足最終バーより新しい約定が quote にあれば quote 終値を採用する
+    （東証銘柄の「引け後に日足が返らない」問題への対処。_quote_latest 参照）。
     Returns: (close: float|None, as_of: str|None, change_pct: float|None)
     5 回リトライ全滅時は (None, None, None) を返す。
     """
@@ -115,14 +140,24 @@ def fetch_close(ticker_str: str) -> tuple:
             else:
                 ts_dt = last_ts
 
+            prev_val = float(closes.iloc[-2]) if len(closes) >= 2 else None
+
+            # quoteフォールバック: 日足最終バーより新しい日付の約定があれば採用
+            q_val, q_dt = _quote_latest(t)
+            if (q_val is not None and q_val > 0 and q_dt is not None
+                    and hasattr(ts_dt, "date") and q_dt.date() > ts_dt.date()):
+                print(f"  [補正] {ticker_str}: 日足が{ts_dt.date()}止まりのため"
+                      f" quote終値({q_dt.date()} {q_val})を採用します。")
+                prev_val = last_val
+                last_val = q_val
+                ts_dt    = q_dt
+
             as_of = to_iso_jst(ts_dt)  # naive の場合は UTC と見なして JST 変換
 
             # 前日比
             change_pct = None
-            if len(closes) >= 2:
-                prev_val = float(closes.iloc[-2])
-                if prev_val and prev_val != 0:
-                    change_pct = round((last_val - prev_val) / abs(prev_val) * 100, 4)
+            if prev_val and prev_val != 0:
+                change_pct = round((last_val - prev_val) / abs(prev_val) * 100, 4)
 
             return last_val, as_of, change_pct
 
