@@ -2,8 +2,8 @@
   "_meta": {
     "schema_version": "1.0",
     "description": "暗号通貨トレジャリー企業 mNAV算出用 設定ファイル。レイヤー2(イベント駆動・手動)とレイヤー3(四半期固定・手動)の変数を管理する。レイヤー1(BTC価格/為替/株価)はこのファイルに含めず、バッチが実行時にAPI取得する。",
-    "last_edited_at": "2026-07-03T00:00:00+09:00",
-    "last_edited_note": "6項目更新(2026-07-03)。メタプラ:(A)BTC保有量 40,177→43,000枚 (B)発行済株式数 1,281,256,904→1,281,283,624株 (C)有利子負債 477→748億円(いずれも開示2026-07-02 / analytics.metaplanet.jp / as_of 2026-06-30)。MSTR:(D)発行済株式数 345.926M→371.614M株 (E)優先株 15.475→15.461B USD (F)現金 1.40→2.55B USD(strategy.com dashboard 2026-07-02参照 / as_of 2026-06-28)。"
+    "last_edited_at": "2026-07-11T23:30:00+09:00",
+    "last_edited_note": "3項目更新(2026-07-11)。MSTR:(A)BTC保有量 847,363→843,775枚=初のBTC売却2回分 -1,363/-2,225(8-K 2026-07-06 / SEC 0001193125-26-295586 / as_of 2026-07-05 16:00 ET) (B)優先株 15.461→15.464B USD(strategy.com Pref / as_of 2026-07-10)。メタプラ:(C)有利子負債 748→751億円=外貨建債務の円換算変動(analytics.metaplanet.jp / as_of 2026-07-11)。任意:(D)MSTR現金 2.55B USDは値不変のままas_of/出所を8-K USD Reserve Updateへ鮮度更新。今回から旧値はhistory配列に保全しvalid_from付きで追記する方式。"
   },
 
   "global": {
@@ -31,13 +31,17 @@
         "_comment": "イベント駆動。適時開示が出た当日に手動更新する。各変数は値＋根拠開示の出所＋日付を必ずセットで持つ。",
 
         "btc_holdings": {
-          "value": 847363,
+          "value": 843775,
           "unit": "BTC",
-          "as_of": "2026-06-21",
+          "as_of": "2026-07-05",
+          "valid_from": "2026-07-06",
           "source_type": "disclosure",
           "source_url": "https://www.strategy.com/",
-          "source_label": "Strategy 8-K 2026-06-22 BTC Update",
-          "note": "保有BTC総量(枚)。買い増し開示のたびに更新。"
+          "source_label": "Strategy 8-K 2026-07-06 BTC Update（SEC 0001193125-26-295586）",
+          "note": "保有BTC総量(枚)。as_of 2026-07-05 16:00 ET。847,363→843,775は初のBTC売却2回分(-1,363、-2,225)。優先株配当原資・USD Reserve補充目的(BTC Monetization Program 最大$1.25B枠を2026-06-29新設)。",
+          "history": [
+            { "value": 847363, "unit": "BTC", "as_of": "2026-06-21", "source_label": "Strategy 8-K 2026-06-22 BTC Update", "superseded_on": "2026-07-11" }
+          ]
         },
 
         "shares_outstanding": {
@@ -69,15 +73,19 @@
         },
 
         "preferred_equity": {
-          "value": 15461000000,
+          "value": 15464000000,
           "unit": "USD",
-          "as_of": "2026-06-28",
+          "as_of": "2026-07-10",
+          "valid_from": "2026-07-11",
           "source_type": "disclosure",
           "source_url": "https://www.strategy.com/",
           "source_label": "Strategy公式ダッシュボード strategy.com（Pref）",
-          "note": "優先株式の想定元本残高(Aggregate Notional Amount)。普通株主に優先するシニア・クレームとしてmNAV算出時に分子から控除する(清算優先額=想定元本の近似)。市場ベンチマーク(EV基準)と整合させるため必須。",
+          "note": "優先株式の想定元本残高(Aggregate Notional Amount)。as_of 2026-07-10 16:00 ET。普通株主に優先するシニア・クレームとしてmNAV算出時に分子から控除する(清算優先額=想定元本の近似)。市場ベンチマーク(EV基準)と整合させるため必須。",
           "breakdown": [
-            { "label": "STRC/STRK/STRF/STRD 合計", "amount": 15461000000, "type": "preferred_stock", "note": "STRCは年率11.5%配当等。種別ごとの内訳は開示更新時に分解可。" }
+            { "label": "STRC/STRK/STRF/STRD 合計", "amount": 15464000000, "type": "preferred_stock", "note": "STRCは年率11.5%配当等。種別ごとの内訳は開示更新時に分解可。" }
+          ],
+          "history": [
+            { "value": 15461000000, "unit": "USD", "as_of": "2026-06-28", "source_label": "Strategy公式ダッシュボード strategy.com（Pref）", "superseded_on": "2026-07-11" }
           ]
         }
       },
@@ -87,11 +95,11 @@
         "cash_and_equivalents": {
           "value": 2550000000,
           "unit": "USD",
-          "as_of": "2026-06-28",
+          "as_of": "2026-07-05",
           "source_type": "disclosure",
           "source_url": "https://www.strategy.com/",
-          "source_label": "Strategy公式ダッシュボード strategy.com（2026-07-02参照）",
-          "note": "手元現金等(USD Reserve)。公式ダッシュボード最新値を採用。"
+          "source_label": "Strategy 8-K 2026-07-06 USD Reserve Update（SEC 0001193125-26-295586）",
+          "note": "手元現金等(USD Reserve)。値は2.55B USDのまま不変(出所の鮮度のみ更新)。BTC Monetization ProgramによるUSD Reserve補充後の8-K確認値。"
         }
       },
 
@@ -138,15 +146,19 @@
         },
 
         "interest_bearing_debt": {
-          "value": 74800000000,
+          "value": 75100000000,
           "unit": "JPY",
-          "as_of": "2026-06-30",
+          "as_of": "2026-07-11",
+          "valid_from": "2026-07-11",
           "source_type": "disclosure",
           "source_url": "https://analytics.metaplanet.jp/?lang=ja",
           "source_label": "メタプラネット公式 analytics.metaplanet.jp クレジット概要（負債残高合計）",
-          "note": "有利子負債残高。2026-06-30時点の負債残高合計748億円。",
+          "note": "有利子負債残高。2026-07-11時点の負債残高合計751億円。7/2開示PDF記載「80億円普通社債＋約672億円外貨建債務」(≈752億円)と整合。748→751億円は外貨建債務の円換算変動によるもの。",
           "breakdown": [
-            { "label": "負債残高合計", "amount": 74800000000, "maturity": null, "type": "total", "note": "748億円（2026-06-30時点）。社債・クレジットファシリティの内訳は次回開示で確認。" }
+            { "label": "負債残高合計", "amount": 75100000000, "maturity": null, "type": "total", "note": "751億円（2026-07-11時点）。社債・クレジットファシリティの内訳は次回開示で確認。" }
+          ],
+          "history": [
+            { "value": 74800000000, "unit": "JPY", "as_of": "2026-06-30", "source_label": "メタプラネット公式 analytics.metaplanet.jp クレジット概要（負債残高合計）", "superseded_on": "2026-07-11" }
           ]
         },
 
