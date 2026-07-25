@@ -45,13 +45,16 @@
         },
 
         "shares_outstanding": {
-          "value": 371614000,
+          "value": 379165099,
           "unit": "shares",
-          "as_of": "2026-06-28",
+          "as_of": "2026-07-19",
           "source_type": "disclosure",
-          "source_url": "https://www.strategy.com/",
-          "source_label": "Strategy公式ダッシュボード strategy.com（2026-07-02参照）",
-          "note": "基本発行済株式数(希薄化前)。公式ダッシュボード掲載値。ATMで日々増加するため開示のたびに更新が望ましい。"
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1050446/000119312526308369/0001193125-26-308369-index.htm",
+          "source_label": "Strategy 8-K ATM Update (SEC 0001193125-26-308369, as of 2026-07-19)",
+          "note": "基本発行済株式数(希薄化前)。ATM売却の積み上げ(371,614,000 + 4,818,781 + 2,732,318 = 379,165,099)。ATMで日々増加するため開示のたびに更新が望ましい。",
+          "history": [
+            { "value": 371614000, "unit": "shares", "as_of": "2026-06-28", "source_label": "Strategy公式ダッシュボード strategy.com（2026-07-02参照）", "superseded_on": "2026-07-26" }
+          ]
         },
 
         "interest_bearing_debt": {
