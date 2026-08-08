@@ -2,8 +2,8 @@
   "_meta": {
     "schema_version": "1.0",
     "description": "暗号通貨トレジャリー企業 mNAV算出用 設定ファイル。レイヤー2(イベント駆動・手動)とレイヤー3(四半期固定・手動)の変数を管理する。レイヤー1(BTC価格/為替/株価)はこのファイルに含めず、バッチが実行時にAPI取得する。",
-    "last_edited_at": "2026-07-11T23:30:00+09:00",
-    "last_edited_note": "3項目更新(2026-07-11)。MSTR:(A)BTC保有量 847,363→843,775枚=初のBTC売却2回分 -1,363/-2,225(8-K 2026-07-06 / SEC 0001193125-26-295586 / as_of 2026-07-05 16:00 ET) (B)優先株 15.461→15.464B USD(strategy.com Pref / as_of 2026-07-10)。メタプラ:(C)有利子負債 748→751億円=外貨建債務の円換算変動(analytics.metaplanet.jp / as_of 2026-07-11)。任意:(D)MSTR現金 2.55B USDは値不変のままas_of/出所を8-K USD Reserve Updateへ鮮度更新。今回から旧値はhistory配列に保全しvalid_from付きで追記する方式。"
+    "last_edited_at": "2026-08-08T00:00:00+09:00",
+    "last_edited_note": "5項目更新(2026-08-08、決算シーズン一斉反映)。MSTR:(A)BTC保有量 843,775→842,138枚(8-K 2026-08-03 / SEC 0001193125-26-329565 / as_of 2026-08-02) (B)優先株 15.464→15.350B USD=STRC買戻し912,143株($81.2M)による減少(Digital Credit Securities Repurchase Program) (C)発行済株式数 379,165,099→384,225,751株(Class A+B、10-Q表紙確定値 SEC 0001050446-26-000044 / as_of 2026-07-24) (D)USD Reserve 2.55B→4.00B USD(8-K 2026-08-03 / as_of 2026-08-02)。メタプラ:(E)発行済株式数(自己株式除く) 1,281,283,624→1,281,281,781株(適時開示2026-08-03 / as_of 2026-07-31、自己株買い実績0株)。有利子負債・現金は決算短信待ちのため今回対象外。優先株式(MERCURY)・BTC保有量は変化なしのため対象外。★MSTR優先株breakdownにSTRE系列(EUR建て)が未収録、次回要確認。"
   },
 
   "global": {
@@ -31,29 +31,32 @@
         "_comment": "イベント駆動。適時開示が出た当日に手動更新する。各変数は値＋根拠開示の出所＋日付を必ずセットで持つ。",
 
         "btc_holdings": {
-          "value": 843775,
+          "value": 842138,
           "unit": "BTC",
-          "as_of": "2026-07-05",
-          "valid_from": "2026-07-06",
+          "as_of": "2026-08-02",
+          "valid_from": "2026-08-03",
           "source_type": "disclosure",
           "source_url": "https://www.strategy.com/",
-          "source_label": "Strategy 8-K 2026-07-06 BTC Update（SEC 0001193125-26-295586）",
-          "note": "保有BTC総量(枚)。as_of 2026-07-05 16:00 ET。847,363→843,775は初のBTC売却2回分(-1,363、-2,225)。優先株配当原資・USD Reserve補充目的(BTC Monetization Program 最大$1.25B枠を2026-06-29新設)。",
+          "source_label": "Strategy 8-K 2026-08-03 BTC Update（SEC 0001193125-26-329565）",
+          "note": "保有BTC総量(枚)。as_of 2026-08-02。週次アップデート反映。",
           "history": [
-            { "value": 847363, "unit": "BTC", "as_of": "2026-06-21", "source_label": "Strategy 8-K 2026-06-22 BTC Update", "superseded_on": "2026-07-11" }
+            { "value": 847363, "unit": "BTC", "as_of": "2026-06-21", "source_label": "Strategy 8-K 2026-06-22 BTC Update", "superseded_on": "2026-07-11" },
+            { "value": 843775, "unit": "BTC", "as_of": "2026-07-05", "source_label": "Strategy 8-K 2026-07-06 BTC Update（SEC 0001193125-26-295586）", "superseded_on": "2026-08-03" }
           ]
         },
 
         "shares_outstanding": {
-          "value": 379165099,
+          "value": 384225751,
           "unit": "shares",
-          "as_of": "2026-07-19",
+          "as_of": "2026-07-24",
+          "valid_from": "2026-07-24",
           "source_type": "disclosure",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1050446/000119312526308369/0001193125-26-308369-index.htm",
-          "source_label": "Strategy 8-K ATM Update (SEC 0001193125-26-308369, as of 2026-07-19)",
-          "note": "基本発行済株式数(希薄化前)。ATM売却の積み上げ(371,614,000 + 4,818,781 + 2,732,318 = 379,165,099)。ATMで日々増加するため開示のたびに更新が望ましい。",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1050446/000105044626000044/0001050446-26-000044-index.htm",
+          "source_label": "Strategy Form 10-Q 表紙記載株式数 (SEC 0001050446-26-000044, as of 2026-07-24)",
+          "note": "基本発行済株式数(希薄化前)。Class A 364,585,501株 + Class B 19,640,250株 = 384,225,751株(10-Q表紙の確定値)。7/24〜8/2にATMで約301万株の追加売出しがあったことが判明しているが一次資料未確認のため、確定値である7/24時点を採用。次回8-Kまたは10-Qで反映予定。",
           "history": [
-            { "value": 371614000, "unit": "shares", "as_of": "2026-06-28", "source_label": "Strategy公式ダッシュボード strategy.com（2026-07-02参照）", "superseded_on": "2026-07-26" }
+            { "value": 371614000, "unit": "shares", "as_of": "2026-06-28", "source_label": "Strategy公式ダッシュボード strategy.com（2026-07-02参照）", "superseded_on": "2026-07-26" },
+            { "value": 379165099, "unit": "shares", "as_of": "2026-07-19", "source_label": "Strategy 8-K ATM Update (SEC 0001193125-26-308369, as of 2026-07-19)", "superseded_on": "2026-07-24" }
           ]
         },
 
@@ -76,43 +79,48 @@
         },
 
         "preferred_equity": {
-          "value": 15464000000,
+          "value": 15350000000,
           "unit": "USD",
-          "as_of": "2026-07-10",
-          "valid_from": "2026-07-11",
+          "as_of": "2026-08-02",
+          "valid_from": "2026-08-03",
           "source_type": "disclosure",
           "source_url": "https://www.strategy.com/",
-          "source_label": "Strategy公式ダッシュボード strategy.com（Pref）",
-          "note": "優先株式の想定元本残高(Aggregate Notional Amount)。as_of 2026-07-10 16:00 ET。普通株主に優先するシニア・クレームとしてmNAV算出時に分子から控除する(清算優先額=想定元本の近似)。市場ベンチマーク(EV基準)と整合させるため必須。",
+          "source_label": "Strategy公式ダッシュボード strategy.com（Pref）／ Strategy 8-K 2026-08-03（SEC 0001193125-26-329565）STRC Repurchase",
+          "note": "優先株式の想定元本残高(Aggregate Notional Amount)。as_of 2026-08-02。普通株主に優先するシニア・クレームとしてmNAV算出時に分子から控除する(清算優先額=想定元本の近似)。前回15,464,000,000 USD(2026-07-10)からの減少は、2026-06-29開始のDigital Credit Securities Repurchase Programに基づくSTRC買戻し912,143株($81.2M)による(ATM発行による増加を上回る買戻し)。★要確認: 現行breakdownはSTRC/STRK/STRF/STRD合計のみで、2025-11-13初回発行のSTRE(EUR建て、7,750,000株)系列が独立フィールドとして存在しない。STRE分がシニア・クレーム控除に含まれていない可能性があるため、次回更新時にSTRE単独の残高開示を確認しbreakdownに追加することが望ましい。",
           "breakdown": [
-            { "label": "STRC/STRK/STRF/STRD 合計", "amount": 15464000000, "type": "preferred_stock", "note": "STRCは年率11.5%配当等。種別ごとの内訳は開示更新時に分解可。" }
+            { "label": "STRC/STRK/STRF/STRD 合計", "amount": 15350000000, "type": "preferred_stock", "note": "STRCは年率11.5%配当等。種別ごとの内訳は開示更新時に分解可。STRE(EUR建て)は別枠管理・現行未収録。" }
           ],
           "history": [
-            { "value": 15461000000, "unit": "USD", "as_of": "2026-06-28", "source_label": "Strategy公式ダッシュボード strategy.com（Pref）", "superseded_on": "2026-07-11" }
+            { "value": 15461000000, "unit": "USD", "as_of": "2026-06-28", "source_label": "Strategy公式ダッシュボード strategy.com（Pref）", "superseded_on": "2026-07-11" },
+            { "value": 15464000000, "unit": "USD", "as_of": "2026-07-10", "source_label": "Strategy公式ダッシュボード strategy.com（Pref）", "superseded_on": "2026-08-03" }
           ]
         }
       },
 
       "layer3": {
-        "_comment": "四半期固定。決算発表時にのみ更新する。",
+        "_comment": "四半期固定。決算発表時にのみ更新する。直近は開示頻度が高いため随時値を更新している。",
         "cash_and_equivalents": {
-          "value": 2550000000,
+          "value": 4000000000,
           "unit": "USD",
-          "as_of": "2026-07-05",
+          "as_of": "2026-08-02",
+          "valid_from": "2026-08-03",
           "source_type": "disclosure",
           "source_url": "https://www.strategy.com/",
-          "source_label": "Strategy 8-K 2026-07-06 USD Reserve Update（SEC 0001193125-26-295586）",
-          "note": "手元現金等(USD Reserve)。値は2.55B USDのまま不変(出所の鮮度のみ更新)。BTC Monetization ProgramによるUSD Reserve補充後の8-K確認値。"
+          "source_label": "Strategy 8-K 2026-08-03 USD Reserve Update（SEC 0001193125-26-329565）",
+          "note": "手元現金等(USD Reserve)。会社発表の広義流動性指標(現金＋短期投資等)。既存フィールド定義と一致(前回2026-07-05更新時も同一定義のUSD Reserveを採用)。2.55B→4.0B USDへ増加。",
+          "history": [
+            { "value": 2550000000, "unit": "USD", "as_of": "2026-07-05", "source_label": "Strategy 8-K 2026-07-06 USD Reserve Update（SEC 0001193125-26-295586）", "superseded_on": "2026-08-03" }
+          ]
         }
       },
 
       "reference_only": {
         "_comment": "計算には使わない。UI参考表示用。",
         "btc_avg_cost": {
-          "value": 75680,
+          "value": 75419,
           "unit": "USD",
-          "as_of": "2026-06-07",
-          "note": "平均取得単価(参考)。計算には使用しない(計算は常に現在枚数×現在価格)。"
+          "as_of": "2026-08-02",
+          "note": "平均取得単価(参考)。計算には使用しない(計算は常に現在枚数×現在価格)。累計取得原価$63.51B。"
         }
       }
     },
@@ -139,13 +147,17 @@
         },
 
         "shares_outstanding": {
-          "value": 1281283624,
+          "value": 1281281781,
           "unit": "shares",
-          "as_of": "2026-06-30",
+          "as_of": "2026-07-31",
+          "valid_from": "2026-08-04",
           "source_type": "disclosure",
-          "source_url": "https://analytics.metaplanet.jp/?lang=ja",
-          "source_label": "適時開示 2026-07-02 / analytics.metaplanet.jp",
-          "note": "★希薄化タイムラグ注意。2026-06-30時点の発行済株式数。新株予約権(MSCB)が日々行使され株式数は膨張するが、開示は月初の前月末分のみ。月末に近づくほどmNAVが過大評価されるバイアスあり(UIで注記必須)。"
+          "source_url": "https://www.release.tdnet.info/inbs/140120260803506633.pdf",
+          "source_label": "適時開示 2026-08-03（自己株式取得状況／新株予約権月間行使状況）",
+          "note": "★希薄化タイムラグ注意。2026-07-31時点の発行済株式数(自己株式26,843株を除く、自己株式含む合計は1,281,308,624株)。新株予約権(MSCB)が日々行使され株式数は膨張するが、開示は月初の前月末分のみ。月末に近づくほどmNAVが過大評価されるバイアスあり(UIで注記必須)。同日開示の自己株買い実績は0株のため、変動要因は新株予約権行使のみ。",
+          "history": [
+            { "value": 1281283624, "unit": "shares", "as_of": "2026-06-30", "source_label": "適時開示 2026-07-02 / analytics.metaplanet.jp", "superseded_on": "2026-08-04" }
+          ]
         },
 
         "interest_bearing_debt": {
