@@ -178,15 +178,19 @@
         },
 
         "preferred_equity": {
-          "value": 23600000000,
+          "value": 23610000000,
           "unit": "JPY",
-          "as_of": "2026-03-31",
+          "as_of": "2026-06-30",
+          "valid_from": "2026-06-30",
           "source_type": "disclosure",
-          "source_url": "https://analytics.metaplanet.jp/?lang=ja",
-          "source_label": "メタプラネット公式 analytics.metaplanet.jp（優先株残高合計）",
-          "note": "B種種類株式（MERCURY）の想定元本残高。シニア・クレームとして控除（MSTRと同一ロジック）。",
+          "source_url": "https://www.release.tdnet.info/inbs/140120260812518571.pdf",
+          "source_label": "2026年12月期 第2四半期(中間期)決算短信(2026-08-13開示)",
+          "note": "B種種類株式（MERCURY）の想定元本残高。シニア・クレームとして控除（MSTRと同一ロジック）。発行済23,610,000株×額面1,000円。",
           "breakdown": [
-            { "label": "B種種類株式（MERCURY）", "amount": 23600000000, "shares": 23610000, "type": "preferred_stock", "note": "B種MERCURY。想定元本23,600百万円(23,610,000株)。" }
+            { "label": "B種種類株式（MERCURY）", "amount": 23610000000, "shares": 23610000, "type": "preferred_stock", "note": "B種MERCURY。想定元本23,610百万円(23,610,000株×額面1,000円)。" }
+          ],
+          "history": [
+            { "value": 23600000000, "unit": "JPY", "as_of": "2026-03-31", "source_label": "メタプラネット公式 analytics.metaplanet.jp（優先株残高合計）", "superseded_on": "2026-06-30" }
           ]
         }
       },
@@ -194,14 +198,18 @@
       "layer3": {
         "_comment": "四半期固定。決算発表時にのみ更新。",
         "cash_and_equivalents": {
-          "value": 23821000000,
+          "value": 1087000000,
           "unit": "JPY",
-          "as_of": "2026-03-31",
+          "as_of": "2026-06-30",
+          "valid_from": "2026-06-30",
           "source_type": "earnings",
-          "fiscal_period": "Q1 2026",
-          "source_url": "https://finance.yahoo.co.jp/quote/3350.T/financials",
-          "source_label": "2026年12月期 第1四半期決算短信(要約データ)",
-          "note": "★確度中(二次情報ベース)。現金及び預金238.21億円。Siiibo証券買収(21億円・7月完了予定)で今後変動見込み。"
+          "fiscal_period": "Q2 2026 (中間期)",
+          "source_url": "https://www.release.tdnet.info/inbs/140120260812518571.pdf",
+          "source_label": "2026年12月期 第2四半期(中間期)決算短信(2026-08-13開示)",
+          "note": "現金及び預金のみ(Q1と同一定義)。現金及び預金10.87億円。参考: USDコイン2.50億円+預け金3.32億円を含めた広義流動性は16.69億円(未収録・別枠)。",
+          "history": [
+            { "value": 23821000000, "unit": "JPY", "as_of": "2026-03-31", "source_label": "2026年12月期 第1四半期決算短信(要約データ)", "superseded_on": "2026-06-30" }
+          ]
         }
       },
 
