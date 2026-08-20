@@ -479,9 +479,145 @@
     <span>暗号通貨トレジャリー企業 mNAVモニター</span>
   </nav>
 
-  <div id="loading">データを読み込み中…</div>
+  <!--HEADER_START-->
+  <div id="header-section"><div class="site-header">
+      <h1 class="site-title">暗号通貨トレジャリー企業 mNAVモニター</h1>
+      <!-- 回遊リンク①：タイトル右横 / 今後ページが増えたらここに <a> を追加 -->
+      <nav class="site-nav">
+        <span class="site-nav-label">数理投資情報部の他の分析 ▶</span>
+        <a href="https://xdbdb.com/sbg-nav/">SBG 理論株価モニター</a>
+        <a href="https://xdbdb.com/kioxia-sandisk/">キオクシア×サンディスク PER</a>
+        <a href="https://xdbdb.com/momentum-corr/">モメンタム相関係数</a>
+        <a href="https://xdbdb.com/ai-manifold/">AI業界地図</a>
+        <a href="https://xdbdb.com/ai-supply-dag/">生成AIサプライチェーン</a>
+        <a href="https://xdbdb.com/articles/">連載：暗黙知をシステムにする</a>
+        <a href="https://xdbdb.com/">トップ</a>
+      </nav>
+      <div class="lead-text">ビットコインを大量保有する企業（メタプラネット、Strategy／旧MicroStrategyなど）の時価総額が、保有暗号資産の純資産価値に対して何倍か（mNAVプレミアム）を毎営業日自動算出します。「なぜ直接ビットコインを買わず、割高に見える株を買うのか」という疑問に、定量的な視点を提供します。</div>
+      <div class="meta-row">
+        <div class="meta-item">基準時刻：<span>2026/08/21 07:00 JST</span></div>
+        <div class="meta-item">生成：<span>2026/08/21 07:59 JST</span></div>
+        <div class="meta-item">ステータス：<span class="badge badge-ok">COMPLETE</span></div>
+      </div>
+    </div>
+    <div class="assumptions">
+      <strong>計算前提（すべてUIに明示）：</strong>
+      本業価値ゼロ評価（ソフトウェア事業等は計算に含めない）｜
+      Gross NAV採用（含み益への繰延税金負債は引かない＝税引前）｜
+      希薄化非考慮（転換社債は額面の負債として計上。分母は基本発行済株式数）
+    </div>
+    <div class="assumptions" style="margin-top:-16px;font-size:10px;color:var(--text3)">
+      毎朝JST7時着地。BTC価格・為替・MSTR株価は当日の米国市場終値ベース、メタプラ株価は前日の東京終値ベース（時点ズレを明示）。
+    </div>
+    <div class="formula-block">
+      <div class="formula-title">mNAV の計算式</div>
+      <div class="formula-line">理論NAV ＝ BTC時価評価額 ＋ 手元現金等 － シニア・クレーム（有利子負債＋優先株式）</div>
+      <div class="formula-line">mNAVプレミアム ＝ 時価総額 ÷ 理論NAV</div>
+      <button class="btn-diagram" onclick="openDiagram()">図解を見る ▶</button>
+    </div></div>
+  <!--HEADER_END-->
+
+  <div id="alerts-section"></div>
+
+  <!--COMPARISON_START-->
+  <div id="comparison-section"><h2>★ 日米 mNAV プレミアム比較</h2>
+    <div class="comparison-grid">
+      <div class="cmp-card">
+        <div class="ticker">NASDAQ: MSTR</div>
+        <div class="name">Strategy (MicroStrategy)</div>
+        <div class="mnav-val premium">1.00x</div><div class="pct-val premium">+0.2%</div>
+      </div>
+      <div class="cmp-center">
+        <div class="spread-label">スプレッド（pt差）</div>
+        <div class="spread-val premium">+0.19<span style="font-size:14px">pt</span></div><div class="spread-desc">MSTRの方が 0.19pt 割高に評価</div>
+        <div class="spread-desc" style="font-size:10px;color:var(--text3)">
+          倍率の引き算（%ではない）
+        </div>
+      </div>
+      <div class="cmp-card">
+        <div class="ticker">東証: 3350</div>
+        <div class="name">メタプラネット</div>
+        <div class="mnav-val discount">0.81x</div><div class="pct-val discount">-18.8%</div>
+      </div>
+    </div></div>
+  <!--COMPARISON_END-->
+
+  <!--PRICE_SUMMARY_START-->
+  <div id="price-summary">
+    <div class="price-summary-row" style="display:flex;flex-wrap:wrap;gap:16px;margin:14px 0;font-size:12px;color:var(--text2)">
+      <span><strong style="color:var(--text)">MSTR</strong> $112.39 <span class="premium">+7.81%</span></span>
+      <span><strong style="color:var(--text)">メタプラネット</strong> ¥253 <span class="premium">+16.05%</span></span>
+    </div>
+    </div>
+  <!--PRICE_SUMMARY_END-->
+
+  <div id="loading">詳細データを読み込み中…</div>
   <div id="fetch-error" style="display:none"></div>
   <div id="content" style="display:none"></div>
+
+  <!-- 以下、mNAVの基本解説・計算注記・免責事項（データに依存しない固定テキストのため静的記述。旧 renderFooter() から移設） -->
+  <section class="seo-section">
+    <h2>mNAVとプレミアムの基本</h2>
+    <p>mNAV（修正純資産価値倍率）は、企業の時価総額を、その企業が保有するビットコインなどの暗号資産の純資産価値（NAV）で割った倍率です。mNAVが1倍なら株価は保有資産とほぼ等価、1倍を超えていれば「プレミアム」が、下回っていれば「ディスカウント」が付いている状態を意味します。メタプラネットやStrategy（旧MicroStrategy）といったビットコイン保有企業の多くは、このmNAVが1倍を大きく超える水準で取引されてきました。</p>
+
+    <h2>なぜプレミアム（mNAV&gt;1）が生まれるのか</h2>
+    <p>「保有資産より高い値段で株が買われる」のは一見不合理ですが、いくつかの合理的な背景があります。</p>
+    <p>第一に、資金調達による1株あたり資産の増加です。株価が保有資産価値を上回っている（mNAV&gt;1の）局面では、企業は新株発行などで調達した資金でさらにビットコインを買い増すことができ、これが1株あたりのビットコイン保有量を増やす効果を生みます。プレミアムが高いほど、この資本政策が有利に働きます。</p>
+    <p>第二に、保有資産を使った収益化です。一部の企業は、保有するビットコインを活用したオプション取引などを通じて、追加の収益を生み出す事業を展開しています。単なる「ビットコインの保管庫」ではなく、保有資産からキャッシュフローを生む主体とみなされることが、プレミアムの一因となります。</p>
+    <p>第三に、税制や投資アクセスの面での利便性です。個人が暗号資産を直接売買する場合と、株式を通じて間接的に保有する場合とでは、課税の扱いや投資のしやすさが異なります。証券口座を通じてビットコインへのエクスポージャーを得たい投資家にとって、これらの株式が受け皿となる側面があります。</p>
+
+    <h2>プレミアムは永続しない</h2>
+    <p>一方で、mNAVのプレミアムは市場心理に左右され、常に変動します。相場の過熱時には拡大し、リスクオフ局面では縮小します。とりわけmNAVが1倍を下回る（ディスカウントに転じる）と、前述の資金調達による買い増しが機能しにくくなり、企業価値の成長サイクルが鈍るリスクがあります。本サイトでmNAVの推移を継続的に観測する意義はここにあります。</p>
+  </section>
+  <footer>
+    <p><strong>計算上の注記</strong></p>
+    <ol style="margin:6px 0 0 16px;line-height:2">
+      <li>
+        MSTRの優先株式（STRC/STRK/STRF/STRD 合計、想定元本残高 $15.4B）を、
+        普通株主に優先するシニア・クレームとして mNAV 算出時に控除している。
+        これにより普通株主が実際に受け取れる NAV の近似値を算出する。
+      </li>
+      <li>
+        メタプラネットの発行済株式数は前月末時点の開示値。
+        月中の新株予約権（MSCB 第27回等）行使による希薄化は未反映のため、
+        月末に近づくほど mNAV が過大評価される可能性がある。
+      </li>
+      <li>
+        メタプラネットの有利子負債・手元現金は一部が推測値・二次情報ベース（確度中）。
+        詳細は <code>crypto_config.json</code> の各 <code>note</code> 参照。
+      </li>
+    </ol>
+    <!-- 回遊リンク②：免責事項の上 / 今後ページが増えたらここに <a> を追加 -->
+    <nav class="site-nav" style="margin-top:16px;margin-bottom:12px">
+      <span class="site-nav-label">数理投資情報部の他の分析 ▶</span>
+      <a href="https://xdbdb.com/sbg-nav/">SBG 理論株価モニター</a>
+      <a href="https://xdbdb.com/kioxia-sandisk/">キオクシア×サンディスク PER</a>
+      <a href="https://xdbdb.com/momentum-corr/">モメンタム相関係数</a>
+      <a href="https://xdbdb.com/ai-manifold/">AI業界地図</a>
+      <a href="https://xdbdb.com/ai-supply-dag/">生成AIサプライチェーン</a>
+      <a href="https://xdbdb.com/articles/">連載：暗黙知をシステムにする</a>
+      <a href="https://xdbdb.com/">トップ</a>
+    </nav>
+    <nav style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin-bottom:10px;font-size:.72rem;color:#7c8a9c">
+      <span style="font-weight:700;margin-right:2px">サイト情報 ▶</span>
+      <a href="https://xdbdb.com/privacy/" style="color:#7c8a9c;text-decoration:none">プライバシーポリシー</a>
+      <a href="https://xdbdb.com/about/" style="color:#7c8a9c;text-decoration:none">運営者情報</a>
+      <a href="https://xdbdb.com/contact/" style="color:#7c8a9c;text-decoration:none">お問い合わせ</a>
+    </nav>
+    <p style="margin-top:12px">
+      <strong>免責事項：</strong>
+      本サイトの情報は投資助言ではありません。情報提供を目的とし、投資判断は自己責任でお願いします。
+      計算値は公開情報に基づく推計です。当サイトはYahoo、各取引所、指数算出会社および掲載企業と提携・承認関係になく、掲載データの正確性・完全性を保証するものではありません。
+    </p>
+    <p style="margin-top:6px">
+      データソース：Yahoo Financeの公開データを毎営業日1回取得（BTC-USD / USDJPY=X / MSTR / 3350.T） /
+      Strategy IR：<a href="https://www.strategy.com/" target="_blank">strategy.com</a> /
+      メタプラネット IR：<a href="https://metaplanet.jp/jp/ir" target="_blank">metaplanet.jp</a>
+    </p>
+    <p style="margin-top:6px">
+      <a href="https://xdbdb.com">← xdbdb.com トップへ</a>
+    </p>
+  </footer>
 
 </div>
 
@@ -983,6 +1119,20 @@ function renderCalcDetail(companies) {
   `;
 }
 
+// 「結論」の株価サマリー（★焼き込み対象。build_data.py の _build_price_summary_html と対で保守すること）
+function renderPriceSummary(md) {
+  const mstr = md.mstr_price_usd || {};
+  const meta = md.metaplanet_price_jpy || {};
+  const mstrVal = fmtNum(mstr.value, 2, '$', '');
+  const metaVal = fmtNum(meta.value, 0, '¥', '');
+  return `
+    <div class="price-summary-row" style="display:flex;flex-wrap:wrap;gap:16px;margin:14px 0;font-size:12px;color:var(--text2)">
+      <span><strong style="color:var(--text)">MSTR</strong> ${mstrVal} ${fmtChange(mstr.change_pct)}</span>
+      <span><strong style="color:var(--text)">メタプラネット</strong> ${metaVal} ${fmtChange(meta.change_pct)}</span>
+    </div>
+  `;
+}
+
 function renderFooter() {
   return `
     <section class="seo-section">
@@ -1081,15 +1231,18 @@ async function main() {
 
     const overall = (data._meta || {}).overall_status || 'complete';
 
+    // 静的焼き込み済みセクション（header/alerts/comparison/price-summary）は
+    // 同じ場所を最新値で上書きするだけ。焼き込み値と同一データのため見た目の変化はない。
+    document.getElementById('header-section').innerHTML = renderHeader(data._meta || {});
+    document.getElementById('alerts-section').innerHTML = renderAlerts(data);
+    document.getElementById('comparison-section').innerHTML = renderComparison(data.comparison || {}, overall);
+    document.getElementById('price-summary').innerHTML = renderPriceSummary(data.market_data || {});
+
     contEl.innerHTML = [
-      renderHeader(data._meta || {}),
-      renderAlerts(data),
-      renderComparison(data.comparison || {}, overall),
       renderCompanyCards(data.companies || [], overall),
       renderMarketData(data.market_data || {}),
       renderInputsSnapshot(data.companies || []),
       renderCalcDetail(data.companies || []),
-      renderFooter(),
     ].join('');
 
   } catch (e) {

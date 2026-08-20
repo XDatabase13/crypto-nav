@@ -8,6 +8,7 @@ data.json を書き出す。sbg-nav/build_data.py の構造を踏襲。
 """
 
 import json
+import re
 import sys
 import time
 from datetime import datetime, timezone, timedelta
@@ -28,6 +29,7 @@ except AttributeError:
 SCRIPT_DIR = Path(__file__).parent
 CONFIG_PATH = SCRIPT_DIR / "crypto_config.json"
 DATA_PATH   = SCRIPT_DIR / "data.json"
+INDEX_PATH  = SCRIPT_DIR / "index.html"
 
 JST = timezone(timedelta(hours=9))
 MAX_RETRIES    = 5
@@ -374,6 +376,213 @@ def calc_company(
 
 
 # =========================================================================
+# 静的HTML焼き込み(AdSense/SEO対応。xdbdb-hub の build_hub.py bake_index_html を移植)
+# =========================================================================
+def _replace_between(text: str, start: str, end: str, inner: str) -> str:
+    """start と end マーカーの間を inner で置換(マーカー自体は残す)。"""
+    pattern = re.escape(start) + r".*?" + re.escape(end)
+    if not re.search(pattern, text, flags=re.DOTALL):
+        print(f"[bake 警告] マーカーが見つかりません: {start}")
+        return text
+    replacement = start + inner + end
+    return re.sub(pattern, lambda _: replacement, text, count=1, flags=re.DOTALL)
+
+
+def _esc(s) -> str:
+    if s is None:
+        return ""
+    return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def _fmt_date_jst(iso_str: str | None) -> str:
+    """JS側 fmtDate() と同一フォーマット: YYYY/MM/DD HH:MM JST"""
+    if not iso_str:
+        return "—"
+    try:
+        dt = datetime.fromisoformat(iso_str).astimezone(JST)
+        return dt.strftime("%Y/%m/%d %H:%M") + " JST"
+    except Exception:
+        return iso_str
+
+
+def _fmt_num(val, decimals: int = 0, prefix: str = "", suffix: str = "") -> str:
+    """JS側 fmtNum() と同一フォーマット(桁区切りカンマ)。"""
+    if val is None:
+        return '<span class="no-data">—</span>'
+    try:
+        n = float(val)
+    except (TypeError, ValueError):
+        return '<span class="no-data">—</span>'
+    if not (n == n) or n in (float("inf"), float("-inf")):  # NaN/Inf
+        return '<span class="no-data">—</span>'
+    s = f"{n:,.{decimals}f}"
+    return _esc(prefix + s + suffix)
+
+
+def _fmt_mnav(val) -> str:
+    return f"{float(val):.2f}x"
+
+
+def _fmt_change_span(val) -> str:
+    """JS側 fmtChange()/fmtPct() と同一フォーマット。"""
+    if val is None:
+        return '<span class="no-data">—</span>'
+    n = float(val)
+    cls = "premium" if n >= 0 else "discount"
+    sign = "+" if n >= 0 else ""
+    return f'<span class="{cls}">{sign}{n:.2f}%</span>'
+
+
+_STATUS_BADGE_MAP = {
+    "ok":       ("badge-ok", "OK"),
+    "stale":    ("badge-stale", "STALE"),
+    "failed":   ("badge-error", "FAILED"),
+    "complete": ("badge-ok", "COMPLETE"),
+    "partial":  ("badge-partial", "PARTIAL"),
+    "error":    ("badge-error", "ERROR"),
+}
+
+
+def _status_badge(s: str | None) -> str:
+    cls, label = _STATUS_BADGE_MAP.get(s, ("", s or "?"))
+    return f'<span class="badge {cls}">{label}</span>'
+
+
+def _build_header_html(meta: dict) -> str:
+    """renderHeader()(index.html内JS)と同一構造の静的HTML。"""
+    overall = meta.get("overall_status")
+    return f"""<div class="site-header">
+      <h1 class="site-title">暗号通貨トレジャリー企業 mNAVモニター</h1>
+      <!-- 回遊リンク①：タイトル右横 / 今後ページが増えたらここに <a> を追加 -->
+      <nav class="site-nav">
+        <span class="site-nav-label">数理投資情報部の他の分析 ▶</span>
+        <a href="https://xdbdb.com/sbg-nav/">SBG 理論株価モニター</a>
+        <a href="https://xdbdb.com/kioxia-sandisk/">キオクシア×サンディスク PER</a>
+        <a href="https://xdbdb.com/momentum-corr/">モメンタム相関係数</a>
+        <a href="https://xdbdb.com/ai-manifold/">AI業界地図</a>
+        <a href="https://xdbdb.com/ai-supply-dag/">生成AIサプライチェーン</a>
+        <a href="https://xdbdb.com/articles/">連載：暗黙知をシステムにする</a>
+        <a href="https://xdbdb.com/">トップ</a>
+      </nav>
+      <div class="lead-text">ビットコインを大量保有する企業（メタプラネット、Strategy／旧MicroStrategyなど）の時価総額が、保有暗号資産の純資産価値に対して何倍か（mNAVプレミアム）を毎営業日自動算出します。「なぜ直接ビットコインを買わず、割高に見える株を買うのか」という疑問に、定量的な視点を提供します。</div>
+      <div class="meta-row">
+        <div class="meta-item">基準時刻：<span>{_fmt_date_jst(meta.get("reference_time_jst"))}</span></div>
+        <div class="meta-item">生成：<span>{_fmt_date_jst(meta.get("generated_at"))}</span></div>
+        <div class="meta-item">ステータス：{_status_badge(overall)}</div>
+      </div>
+    </div>
+    <div class="assumptions">
+      <strong>計算前提（すべてUIに明示）：</strong>
+      本業価値ゼロ評価（ソフトウェア事業等は計算に含めない）｜
+      Gross NAV採用（含み益への繰延税金負債は引かない＝税引前）｜
+      希薄化非考慮（転換社債は額面の負債として計上。分母は基本発行済株式数）
+    </div>
+    <div class="assumptions" style="margin-top:-16px;font-size:10px;color:var(--text3)">
+      {_esc(meta.get("reference_time_note"))}
+    </div>
+    <div class="formula-block">
+      <div class="formula-title">mNAV の計算式</div>
+      <div class="formula-line">理論NAV ＝ BTC時価評価額 ＋ 手元現金等 － シニア・クレーム（有利子負債＋優先株式）</div>
+      <div class="formula-line">mNAVプレミアム ＝ 時価総額 ÷ 理論NAV</div>
+      <button class="btn-diagram" onclick="openDiagram()">図解を見る ▶</button>
+    </div>"""
+
+
+def _build_comparison_html(comparison: dict, overall: str) -> str:
+    """renderComparison()(index.html内JS)と同一構造の静的HTML。"""
+    btc_failed = overall == "failed"
+    mstr_mnav = comparison.get("mnav_premium_mstr")
+    meta_mnav = comparison.get("mnav_premium_metaplanet")
+    spread = comparison.get("spread") or {}
+
+    def mnav_block(val):
+        if btc_failed:
+            return '<div class="failed-label">算出不可<br>BTC価格取得失敗</div>'
+        if val is None:
+            return '<div class="no-data" style="font-size:28px">データ未投入</div>'
+        n = float(val)
+        cls = "premium" if n >= 1 else "discount"
+        pct = (n - 1) * 100
+        sign = "+" if pct >= 0 else ""
+        return (f'<div class="mnav-val {cls}">{_fmt_mnav(val)}</div>'
+                f'<div class="pct-val {cls}">{sign}{pct:.1f}%</div>')
+
+    def spread_block():
+        if btc_failed or (mstr_mnav is None and meta_mnav is None):
+            return '<div class="spread-val no-data">—</div>'
+        s_val = spread.get("value")
+        if s_val is None:
+            return '<div class="spread-val no-data">—</div>'
+        s = float(s_val)
+        cls = "premium" if s > 0 else "discount" if s < 0 else "neutral"
+        sign = "+" if s >= 0 else ""
+        if s > 0:
+            desc = f"MSTRの方が {abs(s):.2f}pt 割高に評価"
+        elif s < 0:
+            desc = f"メタプラの方が {abs(s):.2f}pt 割高に評価"
+        else:
+            desc = "両社のmNAV倍率は同値"
+        return (f'<div class="spread-val {cls}">{sign}{s:.2f}<span style="font-size:14px">pt</span></div>'
+                f'<div class="spread-desc">{desc}</div>')
+
+    return f"""<h2>★ 日米 mNAV プレミアム比較</h2>
+    <div class="comparison-grid">
+      <div class="cmp-card">
+        <div class="ticker">NASDAQ: MSTR</div>
+        <div class="name">Strategy (MicroStrategy)</div>
+        {mnav_block(mstr_mnav)}
+      </div>
+      <div class="cmp-center">
+        <div class="spread-label">スプレッド（pt差）</div>
+        {spread_block()}
+        <div class="spread-desc" style="font-size:10px;color:var(--text3)">
+          倍率の引き算（%ではない）
+        </div>
+      </div>
+      <div class="cmp-card">
+        <div class="ticker">東証: 3350</div>
+        <div class="name">メタプラネット</div>
+        {mnav_block(meta_mnav)}
+      </div>
+    </div>"""
+
+
+def _build_price_summary_html(market_data: dict) -> str:
+    """renderPriceSummary()(index.html内JS)と同一構造の静的HTML。"""
+    mstr = market_data.get("mstr_price_usd") or {}
+    meta = market_data.get("metaplanet_price_jpy") or {}
+    mstr_val = _fmt_num(mstr.get("value"), 2, "$", "")
+    meta_val = _fmt_num(meta.get("value"), 0, "¥", "")
+    return f"""
+    <div class="price-summary-row" style="display:flex;flex-wrap:wrap;gap:16px;margin:14px 0;font-size:12px;color:var(--text2)">
+      <span><strong style="color:var(--text)">MSTR</strong> {mstr_val} {_fmt_change_span(mstr.get("change_pct"))}</span>
+      <span><strong style="color:var(--text)">メタプラネット</strong> {meta_val} {_fmt_change_span(meta.get("change_pct"))}</span>
+    </div>
+    """
+
+
+def bake_index_html(data: dict, index_path: Path) -> None:
+    """data の値を index.html のマーカー区間に焼き込む(区間外の手編集は保持)。"""
+    if not index_path.exists():
+        print(f"[bake 警告] {index_path} が見つかりません。スキップ。")
+        return
+
+    content = index_path.read_text(encoding="utf-8")
+    meta = data.get("_meta", {})
+    overall = meta.get("overall_status", "complete")
+
+    content = _replace_between(content, "<!--HEADER_START-->", "<!--HEADER_END-->",
+                                f'\n  <div id="header-section">{_build_header_html(meta)}</div>\n  ')
+    content = _replace_between(content, "<!--COMPARISON_START-->", "<!--COMPARISON_END-->",
+                                f'\n  <div id="comparison-section">{_build_comparison_html(data.get("comparison", {}), overall)}</div>\n  ')
+    content = _replace_between(content, "<!--PRICE_SUMMARY_START-->", "<!--PRICE_SUMMARY_END-->",
+                                f'\n  <div id="price-summary">{_build_price_summary_html(data.get("market_data", {}))}</div>\n  ')
+
+    index_path.write_text(content, encoding="utf-8")
+    print("[bake] index.html 焼き込み完了")
+
+
+# =========================================================================
 # メイン
 # =========================================================================
 def build_data():
@@ -649,6 +858,7 @@ def build_data():
     }
 
     save_json(DATA_PATH, output)
+    bake_index_html(output, INDEX_PATH)
     label = {"complete": "OK", "partial": "WARN", "failed": "FAIL"}.get(overall_status, overall_status)
     print(f"[{label}] data.json 書き出し完了。overall_status={overall_status}  generated_at={to_iso_jst(generated_at)}")
     if alerts:
