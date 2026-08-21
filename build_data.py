@@ -44,6 +44,16 @@ STOCK_FX_CHANGE_THRESHOLD_PCT = 20.0  # ±20%
 #       0以下など明らかに不正な値のチェック（下記）は別途行う。
 BTC_CHANGE_VALIDATION_ENABLED = False
 
+# 異常変動しきい値ガードの適用除外銘柄（2026-08-22 追加）
+# 3350.T(メタプラネット)・MSTRはBTCトレジャリー株であり、BTC価格変動が
+# レバレッジ的に波及するため単日±20%超の変動が正常に起こりうる
+# （実測: 3350.T 2026-08-21 +20.95%、MSTR 2026-02-06 +26.11%。
+#  いずれも直近1年で1回のみだがデータ取得の異常ではなく実際の株価変動だった）。
+# BTC本体のchange validationを無効化している理由と同一の論理を適用し、
+# 巻き戻し(stale化)はせず警告のみ記録する。USDJPYはこの構造的レバレッジ理由が
+# ないため対象外のまま維持する。
+ABNORMAL_CHANGE_GUARD_EXEMPT = {"MSTR", "3350.T"}
+
 # タイムスタンプ鮮度チェックのしきい値（警告のみ・算出は続行）
 # BTC/為替: 24/7・24/5 資産なので 1.5日超で異常とみなす
 # 株価(MSTR): 米国市場は最長3日連休（土日+祝月）→ 4日超で警告
@@ -86,6 +96,22 @@ def prev_market_value(prev_data: dict, key: str):
         return prev_data["market_data"][key]["value"]
     except (KeyError, TypeError):
         return None
+
+
+def prev_market_entry(prev_data: dict, key: str) -> dict:
+    """前回 data.json から market_data[key] の value/as_of/change_pct をまとめて取得。
+    異常変動検知で巻き戻す際、value だけでなく as_of/change_pct も前回値に揃えるために使う
+    （3点のうち一部だけ新しい値が残ると「価格は前回のままなのに前日比だけ動く」矛盾表示になるため）。
+    """
+    try:
+        entry = prev_data["market_data"][key]
+        return {
+            "value": entry.get("value"),
+            "as_of": entry.get("as_of"),
+            "change_pct": entry.get("change_pct"),
+        }
+    except (KeyError, TypeError):
+        return {"value": None, "as_of": None, "change_pct": None}
 
 
 # =========================================================================
@@ -174,10 +200,19 @@ def fetch_close(ticker_str: str) -> tuple:
 # バリデーション
 # =========================================================================
 def check_abnormal_change(change_pct: float | None, label: str, alerts: list) -> bool:
-    """前日比が ±STOCK_FX_CHANGE_THRESHOLD_PCT を超えたら True を返し alerts に積む。"""
+    """前日比が ±STOCK_FX_CHANGE_THRESHOLD_PCT を超えたら True を返し alerts に積む。
+    ABNORMAL_CHANGE_GUARD_EXEMPT に含まれる銘柄（BTCトレジャリー株）は、
+    大幅変動が正常に起こりうるため巻き戻しは行わず、警告のみ記録して False を返す。
+    """
     if change_pct is None:
         return False
     if abs(change_pct) > STOCK_FX_CHANGE_THRESHOLD_PCT:
+        if label in ABNORMAL_CHANGE_GUARD_EXEMPT:
+            alerts.append(
+                f"[情報] {label}: 前日比 {change_pct:+.2f}% が閾値 ±{STOCK_FX_CHANGE_THRESHOLD_PCT:.0f}% を超過。"
+                f" BTCトレジャリー株特有の正常な変動の可能性が高いためガード対象外とし、取得値を採用します。"
+            )
+            return False
         alerts.append(
             f"[警告] {label}: 前日比 {change_pct:+.2f}% が閾値 ±{STOCK_FX_CHANGE_THRESHOLD_PCT:.0f}% を超過。"
             f" 異常変動の可能性があるため stale 扱いに変更します。"
@@ -633,10 +668,10 @@ def build_data():
         usdjpy_status = "ok"
         check_timestamp_freshness(usdjpy_as_of, "USDJPY=X", FRESHNESS_MAX_DAYS_BTC_FX, alerts)
         if check_abnormal_change(usdjpy_chg, "USDJPY", alerts):
-            fallback = prev_market_value(prev_data, "usdjpy")
-            if fallback:
-                usdjpy_val = fallback
-                alerts.append(f"  → 前回値({fallback:.2f})を保持します。")
+            prev = prev_market_entry(prev_data, "usdjpy")
+            if prev["value"] is not None:
+                usdjpy_val, usdjpy_as_of, usdjpy_chg = prev["value"], prev["as_of"], prev["change_pct"]
+                alerts.append(f"  → 前回値({usdjpy_val:.2f}, as_of={usdjpy_as_of})を保持します。")
             usdjpy_status = "stale"
 
     # BTC-JPY（派生値） -----------------------------------------------------
@@ -664,10 +699,10 @@ def build_data():
         mstr_status = "ok"
         check_timestamp_freshness(mstr_as_of, "MSTR", FRESHNESS_MAX_DAYS_US_STOCK, alerts)
         if check_abnormal_change(mstr_chg, "MSTR", alerts):
-            fallback = prev_market_value(prev_data, "mstr_price_usd")
-            if fallback:
-                mstr_val = fallback
-                alerts.append(f"  → 前回値(${fallback:.2f})を保持します。")
+            prev = prev_market_entry(prev_data, "mstr_price_usd")
+            if prev["value"] is not None:
+                mstr_val, mstr_as_of, mstr_chg = prev["value"], prev["as_of"], prev["change_pct"]
+                alerts.append(f"  → 前回値(${mstr_val:.2f}, as_of={mstr_as_of})を保持します。")
             mstr_status = "stale"
 
     # 3350.T（メタプラネット）-----------------------------------------------
@@ -686,10 +721,10 @@ def build_data():
         meta_status = "ok"
         check_timestamp_freshness(meta_as_of, "3350.T", FRESHNESS_MAX_DAYS_JP_STOCK, alerts)
         if check_abnormal_change(meta_chg, "3350.T", alerts):
-            fallback = prev_market_value(prev_data, "metaplanet_price_jpy")
-            if fallback:
-                meta_val = fallback
-                alerts.append(f"  → 前回値(¥{fallback:.0f})を保持します。")
+            prev = prev_market_entry(prev_data, "metaplanet_price_jpy")
+            if prev["value"] is not None:
+                meta_val, meta_as_of, meta_chg = prev["value"], prev["as_of"], prev["change_pct"]
+                alerts.append(f"  → 前回値(¥{meta_val:.0f}, as_of={meta_as_of})を保持します。")
             meta_status = "stale"
 
     # -----------------------------------------------------------------------
