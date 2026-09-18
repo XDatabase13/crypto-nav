@@ -2,8 +2,8 @@
   "_meta": {
     "schema_version": "1.0",
     "description": "暗号通貨トレジャリー企業 mNAV 算出結果。バッチが毎朝(JST 7時30分着地)生成。",
-    "generated_at": "2026-09-18T07:30:39+09:00",
-    "reference_time_jst": "2026-09-18T07:30:00+09:00",
+    "generated_at": "2026-09-19T07:30:35+09:00",
+    "reference_time_jst": "2026-09-19T07:30:00+09:00",
     "reference_time_note": "毎朝JST7時30分着地。BTC価格・為替・MSTR株価は当日の米国市場終値ベース、メタプラ株価は前日の東京終値ベース（時点ズレを明示）。",
     "overall_status": "complete",
     "_status_vocabulary": {
@@ -31,39 +31,39 @@
   "market_data": {
     "_comment": "レイヤー1。バッチがAPI取得した実値。",
     "btc_price_usd": {
-      "value": 76197.8984375,
-      "as_of": "2026-09-17T09:00:00+09:00",
-      "change_pct": 0.0625,
+      "value": 81239.8984375,
+      "as_of": "2026-09-18T09:00:00+09:00",
+      "change_pct": 6.3297,
       "status": "ok",
       "source": "yfinance:BTC-USD",
       "_failure_policy": "リトライ全滅時は前回値代用なし。status=failed、両社calc=null、overall_status=failed。"
     },
     "usdjpy": {
-      "value": 155.9949951171875,
-      "as_of": "2026-09-17T08:00:00+09:00",
-      "change_pct": 0.4695,
+      "value": 156.85499572753906,
+      "as_of": "2026-09-18T08:00:00+09:00",
+      "change_pct": 0.539,
       "status": "ok",
       "source": "yfinance:USDJPY=X"
     },
     "btc_price_jpy": {
-      "value": 11886491.0,
-      "as_of": "2026-09-17T09:00:00+09:00",
+      "value": 12742884.0,
+      "as_of": "2026-09-18T09:00:00+09:00",
       "status": "ok",
       "note": "btc_price_usd × usdjpy で算出（派生値）。"
     },
     "mstr_price_usd": {
-      "value": 132.25,
-      "as_of": "2026-09-17T13:00:00+09:00",
-      "change_pct": 4.8106,
+      "value": 153.9199981689453,
+      "as_of": "2026-09-18T13:00:00+09:00",
+      "change_pct": 16.3856,
       "status": "ok",
       "market": "US",
       "price_basis": "当日米国終値",
       "source": "yfinance:MSTR"
     },
     "metaplanet_price_jpy": {
-      "value": 238.0,
-      "as_of": "2026-09-17T00:00:00+09:00",
-      "change_pct": 1.2766,
+      "value": 243.0,
+      "as_of": "2026-09-18T00:00:00+09:00",
+      "change_pct": 2.1008,
       "status": "ok",
       "market": "JP",
       "price_basis": "前日東京終値",
@@ -115,19 +115,19 @@
           "layer": 3
         },
         "btc_price_usd": {
-          "value": 76197.8984375,
-          "as_of": "2026-09-17T09:00:00+09:00",
+          "value": 81239.8984375,
+          "as_of": "2026-09-18T09:00:00+09:00",
           "layer": 1
         },
         "mstr_price_usd": {
-          "value": 132.25,
-          "as_of": "2026-09-17T13:00:00+09:00",
+          "value": 153.9199981689453,
+          "as_of": "2026-09-18T13:00:00+09:00",
           "layer": 1
         }
       },
       "calc": {
         "btc_value": {
-          "value": 64040295148.1,
+          "value": 68277828922.1,
           "currency": "USD",
           "formula": "btc_holdings × btc_price_usd"
         },
@@ -144,39 +144,39 @@
           "note": "シニア・クレーム合計（負債＋優先株）。"
         },
         "nav_total": {
-          "value": 49005295148.1,
+          "value": 53242828922.1,
           "currency": "USD",
           "formula": "btc_value + cash - debt - preferred_equity"
         },
         "nav_per_share": {
-          "value": 117.818231,
+          "value": 128.006084,
           "currency": "USD",
           "formula": "nav_total / shares_outstanding"
         },
         "market_cap": {
-          "value": 55008042782.0,
+          "value": 64021458179.83,
           "currency": "USD",
           "formula": "mstr_price_usd × shares_outstanding"
         },
         "mnav_premium": {
-          "value": 1.122492,
+          "value": 1.202443,
           "unit": "x",
           "formula": "market_cap / nav_total",
           "note": "1超=プレミアム、1未満=ディスカウント。"
         },
         "premium_pct": {
-          "value": 12.2492,
+          "value": 20.2443,
           "unit": "%",
           "formula": "(mnav_premium - 1) × 100"
         }
       },
       "display_secondary_currency": {
         "nav_total_jpy": {
-          "value": 7644580777344.0,
+          "value": 8351403703098.0,
           "formula": "nav_total × usdjpy"
         },
         "market_cap_jpy": {
-          "value": 8580979365184.0,
+          "value": 10042085549268.0,
           "formula": "market_cap × usdjpy"
         }
       },
@@ -231,19 +231,19 @@
           "layer": 3
         },
         "btc_price_jpy": {
-          "value": 11886491.0,
-          "as_of": "2026-09-17T09:00:00+09:00",
+          "value": 12742884.0,
+          "as_of": "2026-09-18T09:00:00+09:00",
           "layer": 1
         },
         "metaplanet_price_jpy": {
-          "value": 238.0,
-          "as_of": "2026-09-17T00:00:00+09:00",
+          "value": 243.0,
+          "as_of": "2026-09-18T00:00:00+09:00",
           "layer": 1
         }
       },
       "calc": {
         "btc_value": {
-          "value": 511119113000.0,
+          "value": 547944012000.0,
           "currency": "JPY",
           "formula": "btc_holdings × btc_price_jpy"
         },
@@ -260,39 +260,39 @@
           "note": "シニア・クレーム合計（負債＋優先株）。"
         },
         "nav_total": {
-          "value": 413496113000.0,
+          "value": 450321012000.0,
           "currency": "JPY",
           "formula": "btc_value + cash - debt - preferred_equity"
         },
         "nav_per_share": {
-          "value": 322.720669,
+          "value": 351.46134,
           "currency": "JPY",
           "formula": "nav_total / shares_outstanding"
         },
         "market_cap": {
-          "value": 304945063878.0,
+          "value": 311351472783.0,
           "currency": "JPY",
           "formula": "metaplanet_price_jpy × shares_outstanding"
         },
         "mnav_premium": {
-          "value": 0.73748,
+          "value": 0.691399,
           "unit": "x",
           "formula": "market_cap / nav_total",
           "note": "1超=プレミアム、1未満=ディスカウント。"
         },
         "premium_pct": {
-          "value": -26.252,
+          "value": -30.8601,
           "unit": "%",
           "formula": "(mnav_premium - 1) × 100"
         }
       },
       "display_secondary_currency": {
         "nav_total_usd": {
-          "value": 2650701150.31,
+          "value": 2870938282.27,
           "formula": "nav_total / usdjpy"
         },
         "market_cap_usd": {
-          "value": 1954838766.78,
+          "value": 1984963700.64,
           "formula": "market_cap / usdjpy"
         }
       },
@@ -306,10 +306,10 @@
   ],
   "comparison": {
     "_comment": "mnav_premium は無次元(倍率)なので日米直接比較可能。",
-    "mnav_premium_mstr": 1.122492,
-    "mnav_premium_metaplanet": 0.73748,
+    "mnav_premium_mstr": 1.202443,
+    "mnav_premium_metaplanet": 0.691399,
     "spread": {
-      "value": 0.385,
+      "value": 0.511,
       "unit": "pt",
       "formula": "mstr - metaplanet",
       "note": "mNAV倍率のポイント差(倍率同士の引き算)であって%ではない。例:MSTR 1.50x・メタプラ 1.20x なら 0.30pt。"
@@ -1563,6 +1563,20 @@
         "mnav_premium": 0.73748,
         "premium_pct": -26.252,
         "nav_total": 413496113000.0
+      },
+      "status": "complete"
+    },
+    {
+      "date": "2026-09-19",
+      "mstr": {
+        "mnav_premium": 1.202443,
+        "premium_pct": 20.2443,
+        "nav_total": 53242828922.1
+      },
+      "metaplanet": {
+        "mnav_premium": 0.691399,
+        "premium_pct": -30.8601,
+        "nav_total": 450321012000.0
       },
       "status": "complete"
     }
