@@ -968,7 +968,7 @@ function renderMarketData(md) {
     const item = md[r.key] || {};
     const val = item.value != null ? fmtNum(item.value, r.dec, r.prefix, '') : '<span class="no-data">—</span>';
     const stCls = `status-${item.status || 'ok'}`;
-    const src = (item.source || item.note || '').replace(/^yfinance:/, '');
+    const src = (item.source || item.note || '').replace(/^[a-z]+:(?!\/\/)/, '');
     const basis = item.price_basis || '';
     return `
       <tr>
