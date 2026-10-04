@@ -607,10 +607,10 @@
     <p style="margin-top:12px">
       <strong>免責事項：</strong>
       本サイトの情報は投資助言ではありません。情報提供を目的とし、投資判断は自己責任でお願いします。
-      計算値は公開情報に基づく推計です。当サイトはYahoo、各取引所、指数算出会社および掲載企業と提携・承認関係になく、掲載データの正確性・完全性を保証するものではありません。
+      計算値は公開情報に基づく推計です。当サイトはデータ提供元、各取引所、指数算出会社および掲載企業と提携・承認関係になく、掲載データの正確性・完全性を保証するものではありません。
     </p>
     <p style="margin-top:6px">
-      データソース：Yahoo Financeの公開データを毎営業日1回取得（BTC-USD / USDJPY=X / MSTR / 3350.T） /
+      データソース：公開されている市場データを毎営業日1回取得（BTC-USD / USDJPY=X / MSTR / 3350.T） /
       Strategy IR：<a href="https://www.strategy.com/" target="_blank">strategy.com</a> /
       メタプラネット IR：<a href="https://metaplanet.jp/jp/ir" target="_blank">metaplanet.jp</a>
     </p>
@@ -968,7 +968,7 @@ function renderMarketData(md) {
     const item = md[r.key] || {};
     const val = item.value != null ? fmtNum(item.value, r.dec, r.prefix, '') : '<span class="no-data">—</span>';
     const stCls = `status-${item.status || 'ok'}`;
-    const src = item.source || item.note || '';
+    const src = (item.source || item.note || '').replace(/^yfinance:/, '');
     const basis = item.price_basis || '';
     return `
       <tr>
@@ -1186,10 +1186,10 @@ function renderFooter() {
       <p style="margin-top:12px">
         <strong>免責事項：</strong>
         本サイトの情報は投資助言ではありません。情報提供を目的とし、投資判断は自己責任でお願いします。
-        計算値は公開情報に基づく推計です。当サイトはYahoo、各取引所、指数算出会社および掲載企業と提携・承認関係になく、掲載データの正確性・完全性を保証するものではありません。
+        計算値は公開情報に基づく推計です。当サイトはデータ提供元、各取引所、指数算出会社および掲載企業と提携・承認関係になく、掲載データの正確性・完全性を保証するものではありません。
       </p>
       <p style="margin-top:6px">
-        データソース：Yahoo Financeの公開データを毎営業日1回取得（BTC-USD / USDJPY=X / MSTR / 3350.T） /
+        データソース：公開されている市場データを毎営業日1回取得（BTC-USD / USDJPY=X / MSTR / 3350.T） /
         Strategy IR：<a href="https://www.strategy.com/" target="_blank">strategy.com</a> /
         メタプラネット IR：<a href="https://metaplanet.jp/jp/ir" target="_blank">metaplanet.jp</a>
       </p>
